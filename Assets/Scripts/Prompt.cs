@@ -22,7 +22,6 @@ public class Prompt : MonoBehaviour
     [HideInInspector] public UnityEvent<PromptQuality> CompletedPromptEvent;
     [HideInInspector] public UnityEvent NewPromptEvent;
     private bool isWaitingForInput = false;
-
     public bool WasCompleted() { return wasCompleted;  }
     public void Complete()     { wasCompleted = true;  }
     public void SetInputTime(float value)
@@ -42,6 +41,8 @@ public class Prompt : MonoBehaviour
 
     private void Start()
     {
+        Debug.LogWarning("Script flagged as using the deprecated PlayerController");
+
         wasCompleted = false;
         inputTime = 2f;
         //launchSequence = transform.parent.GetComponent<LaunchSequence>();
@@ -104,7 +105,13 @@ public class Prompt : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out PlayerController player))
+        if (collision.gameObject.TryGetComponent(out NewPlayerController nPlayer))
+        {
+            if (!wasCompleted) Show();
+            nPlayer.SetCurrentPrompt(this);
+        }
+
+        else if (collision.gameObject.TryGetComponent(out PlayerController player))
         {
             if (!wasCompleted) Show();
             player.SetCurrentPrompt(this);

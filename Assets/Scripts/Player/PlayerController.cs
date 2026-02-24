@@ -1,6 +1,5 @@
 using System.Collections;
 using Unity.Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -167,6 +166,8 @@ public class PlayerController : MonoBehaviour
     // --------------------------------------- START ------------------------------------------
     private void Start()
     {
+        Debug.LogWarning($"PlayerController is deprecated. Use NewPlayerController instead.");
+
         baseXScale = transform.localScale.x;
 
         if (!rb)                   rb = GetComponent<Rigidbody2D>();

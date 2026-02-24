@@ -35,6 +35,8 @@ public class LaunchSequence : MonoBehaviour
 
     private void Start()
     {
+        Debug.LogWarning("Script flagged as using the deprecated PlayerController");
+
         foreach (var prompt in prompts)
         {
             prompt.CompletedPromptEvent.AddListener(ReceiveComplete);
@@ -134,7 +136,12 @@ public class LaunchSequence : MonoBehaviour
     {
         if (isDone) return;
 
-        if (collision.TryGetComponent(out PlayerController player))
+        if (collision.TryGetComponent(out NewPlayerController nPlayer))
+        {
+            if (!prompts[prompts.Count - 1].WasCompleted()) prompts[prompts.Count - 1].CompleteFail(true);
+            FinishSequence();
+        }
+        else if (collision.TryGetComponent(out PlayerController player))
         {
             if (!prompts[prompts.Count - 1].WasCompleted()) prompts[prompts.Count - 1].CompleteFail(true);
             FinishSequence();
