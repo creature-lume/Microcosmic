@@ -11,7 +11,7 @@ public class SonicBoomFX : MonoBehaviour
 
     private void Start()
     {
-        Debug.LogWarning("Script flagged as using the deprecated PlayerController");
+        //Debug.LogWarning("Script flagged as using the deprecated PlayerController");
 
         if (launchSequence == null)
         {

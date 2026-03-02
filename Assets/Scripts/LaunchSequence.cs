@@ -35,7 +35,7 @@ public class LaunchSequence : MonoBehaviour
 
     private void Start()
     {
-        Debug.LogWarning("Script flagged as using the deprecated PlayerController");
+        //Debug.LogWarning("Script flagged as using the deprecated PlayerController");
 
         foreach (var prompt in prompts)
         {

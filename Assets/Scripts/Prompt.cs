@@ -41,7 +41,7 @@ public class Prompt : MonoBehaviour
 
     private void Start()
     {
-        Debug.LogWarning("Script flagged as using the deprecated PlayerController");
+        //Debug.LogWarning("Script flagged as using the deprecated PlayerController");
 
         wasCompleted = false;
         inputTime = 2f;

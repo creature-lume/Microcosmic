@@ -9,7 +9,7 @@ public class Bumper : MonoBehaviour
 
     private void Start()
     {
-        Debug.LogWarning("Script flagged as using the deprecated PlayerController");
+        //Debug.LogWarning("Script flagged as using the deprecated PlayerController");
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
