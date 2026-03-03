@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -49,12 +50,14 @@ public class NewPlayerController : MonoBehaviour
     [SerializeField] private float jumpDecceleration         = 1f;
     [SerializeField] private float startingJumpForce = 10f;
     [SerializeField] private float maxJumpForce      = 10f;
+    [SerializeField] private float maxJumpTime       = 1f;
     private float                  currentJumpForce  = 0f;
     private bool                   isJumping;
     [Space]
 
     [Header("Gravity")]
     [SerializeField] private float gravity;
+    [SerializeField] private float floatingCapsuleOffset;
     [Space]
 
     [Header("Level")]
@@ -109,7 +112,6 @@ public class NewPlayerController : MonoBehaviour
         DEBUG1.color = Color.red;
         DEBUG2.color = Color.green;
         DEBUG3.color = Color.blue;
-        DEBUG3.text  = "";
     }
 
     private void FixedUpdate()
@@ -118,13 +120,12 @@ public class NewPlayerController : MonoBehaviour
         RotationCheck();
         GravityCheck();
         MoveCheck();
-        JumpCheck();
 
         ApplyMovement();
 
-        DEBUG1.SetText($"isJumping: {isJumping}");
-        DEBUG2.SetText($"canJump: {canJump}");
-        DEBUG3.SetText($"appliedJump: {appliedJump}");
+        DEBUG1.SetText($"");
+        DEBUG2.SetText($"");
+        DEBUG3.SetText($"");
 
         CheckAndFaceDirection();
     }
@@ -144,6 +145,8 @@ public class NewPlayerController : MonoBehaviour
 
         isWallRunning = (groundAngle == 90);
         isUpsideDown  = (groundAngle  > 90);
+
+        if (isGrounded && !canJump && isJumping) EndJump();
     }
 
     private void RotationCheck()
@@ -155,16 +158,14 @@ public class NewPlayerController : MonoBehaviour
         }
 
         orientation        = Quaternion.FromToRotation(transform.up, groundInfo.normal);
-
-        if (orientation == transform.rotation) return;
         transform.rotation = Quaternion.Slerp(transform.rotation, orientation * transform.rotation, Time.deltaTime * rotationSmooth);
     }
     private void GravityCheck()
     {
-        if (isGrounded)
+        if (isGrounded && !isFallForgiven)
         {
             appliedGravity = Vector2.zero;
-            return;
+                return;
         }
 
         if (rb.linearVelocityY < 0 && !isWallRunning)
@@ -181,17 +182,13 @@ public class NewPlayerController : MonoBehaviour
         if      (movementInput.x > 0) appliedMovement = transform.right  * moveSpeed;
         else if (movementInput.x < 0) appliedMovement = -transform.right * moveSpeed;
 
-        else                          appliedMovement = Vector2.zero;
+        else appliedMovement = Vector2.zero;
     }
     private void ApplyMovement()
     {
-        Vector2 appliedForces = (appliedMovement /*+ appliedJump */+ appliedGravity);
+        Vector2 appliedForces = (appliedMovement + appliedGravity);
         rb.AddForce(appliedForces);
-
-        /*
-        if      (movementInput.x > 0) rb.AddForce(transform.right  * moveSpeed, ForceMode2D.Force);
-        else if (movementInput.x < 0) rb.AddForce(-transform.right * moveSpeed, ForceMode2D.Force);
-        */
+        rb.linearVelocity += appliedJump;
     }
 
     private void CheckAndFaceDirection()
@@ -202,7 +199,6 @@ public class NewPlayerController : MonoBehaviour
         {
             if (rb.linearVelocity.x < 0) FaceRightOrLeft(true);
             else                         FaceRightOrLeft(false); 
-
             return;
         }
 
@@ -212,13 +208,11 @@ public class NewPlayerController : MonoBehaviour
             {
                 if (rb.linearVelocity.y > 0) FaceRightOrLeft(false);
                 else                         FaceRightOrLeft(true);
-
                 return;
             }
 
             if (rb.linearVelocity.y > 0) FaceRightOrLeft(true);
             else                         FaceRightOrLeft(false);
-
             return;
         }
 
@@ -254,7 +248,7 @@ public class NewPlayerController : MonoBehaviour
             movementInput     = Vector2.zero;
 
             if (!isUpsideDown && !isWallRunning) return;
-            rb.gravityScale = gravity;
+            appliedGravity += new Vector2(0, -homemadeGravity * Time.deltaTime * 2);
         }
     }
 
@@ -263,53 +257,25 @@ public class NewPlayerController : MonoBehaviour
         if (context.started)
         {
             if (!canJump || !isGrounded) return;
-            soundManager.PlayJumpSFX();
-            currentJumpDir   = groundInfo.normal;
-
-            isJumping = true;
-            canJump   = false;
-
-            currentJumpForce = startingJumpForce;
-            //rb.AddForce(jumpSpeed * groundInfo.normal, ForceMode2D.Impulse);
+            StartCoroutine(JumpRoutine());
         }
 
-        if (context.canceled)
-        {
-            EndJump();
-
-            return;
-        }
-
-        //appliedJump = startingJumpForce * currentJumpDir; //find a way to account for horizontal movement
-
-
-        /*
-        // Reached max jump:
-        if (currentJumpForce >= maxJumpForce)
-        {
-            DEBUG1.SetText($"Reached max jump");
-            ResetJump();
-            return;
-        }
-        */
+        if (context.canceled) EndJump(); 
     }
 
-    private void JumpCheck() //to coroutine
+    private IEnumerator JumpRoutine()
     {
-        //if (!isJumping || currentJumpForce >= maxJumpForce) return;
+        soundManager.PlayJumpSFX();
 
-        if (!isJumping) return;
+        isJumping = true;
+        canJump   = false;
 
-        if (currentJumpForce >= maxJumpForce)
-        {
-            EndJump();
-            return;
-        }
+        //currentJumpDir = groundInfo.normal;
+        appliedJump = startingJumpForce * groundInfo.normal;
 
-        if (rb.linearVelocityY < 0) currentJumpForce  -= jumpDecceleration; //deccelerate if rising
-
-        appliedJump        = currentJumpForce * currentJumpDir;
-        rb.linearVelocity += appliedJump;
+        yield return new WaitForSeconds(maxJumpTime);
+        
+        if (isJumping) EndJump();
     }
 
     private void EndJump()
@@ -320,6 +286,8 @@ public class NewPlayerController : MonoBehaviour
         canJump     = isGrounded;
 
         currentJumpForce = 0;
+
+        StopCoroutine(JumpRoutine());
     }
 
     public void Boost(InputAction.CallbackContext context)
