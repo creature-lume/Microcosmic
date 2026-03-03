@@ -32,6 +32,7 @@ public class NewPlayerController : MonoBehaviour
     private float moveSpeed;
     private bool isHoldingDownMove;
     // Wall & Ceiling running
+
     // Rotation
     [SerializeField] private float rotationSmooth;
     private Quaternion orientation;
@@ -45,10 +46,11 @@ public class NewPlayerController : MonoBehaviour
     [Space]
 
     [Header("Jump")]
-    [SerializeField] private float jumpSpeed    = 1f;
-    [SerializeField] private float maxJumpForce = 10f;
-    private float                  currentJumpForce = 0f;
-    float groundAngle;
+    [SerializeField] private float jumpDecceleration         = 1f;
+    [SerializeField] private float startingJumpForce = 10f;
+    [SerializeField] private float maxJumpForce      = 10f;
+    private float                  currentJumpForce  = 0f;
+    private bool                   isJumping;
     [Space]
 
     [Header("Gravity")]
@@ -68,12 +70,13 @@ public class NewPlayerController : MonoBehaviour
     private bool isUpsideDown;
     private bool isFallForgiven;
     private bool canJump;
+    private float groundAngle;
     [SerializeField] private float groundedDistance;
     [SerializeField] private float forgiveFallDistance;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
 
-    public  UnityEvent RespawnEvent;
+    public  UnityEvent   RespawnEvent;
     private SoundManager soundManager;
 
     private Vector2 appliedGravity;
@@ -83,10 +86,7 @@ public class NewPlayerController : MonoBehaviour
 
     RaycastHit2D groundInfo;
 
-    private void OnValidate()
-    {
-        scale = transform.localScale;
-    }
+    private void OnValidate() { scale = transform.localScale; }
 
     public void Awake()
     {
@@ -118,15 +118,13 @@ public class NewPlayerController : MonoBehaviour
         RotationCheck();
         GravityCheck();
         MoveCheck();
+        JumpCheck();
 
-        Vector2 appliedForces = (appliedMovement + appliedJump + appliedGravity);
-        rb.AddForce(appliedForces);
+        ApplyMovement();
 
-        //ApplyMovement();
-
-        DEBUG1.SetText($"isGrounded: {isGrounded}");
-        DEBUG2.SetText($"Gravity: {appliedGravity}");
-        DEBUG3.SetText($"Applied forces: {appliedForces}");
+        DEBUG1.SetText($"isJumping: {isJumping}");
+        DEBUG2.SetText($"canJump: {canJump}");
+        DEBUG3.SetText($"appliedJump: {appliedJump}");
 
         CheckAndFaceDirection();
     }
@@ -187,8 +185,13 @@ public class NewPlayerController : MonoBehaviour
     }
     private void ApplyMovement()
     {
+        Vector2 appliedForces = (appliedMovement /*+ appliedJump */+ appliedGravity);
+        rb.AddForce(appliedForces);
+
+        /*
         if      (movementInput.x > 0) rb.AddForce(transform.right  * moveSpeed, ForceMode2D.Force);
         else if (movementInput.x < 0) rb.AddForce(-transform.right * moveSpeed, ForceMode2D.Force);
+        */
     }
 
     private void CheckAndFaceDirection()
@@ -205,8 +208,7 @@ public class NewPlayerController : MonoBehaviour
 
         if (isWallRunning)
         {
-            // If left wall:
-            if (groundInfo.normal.x == 1) 
+            if (groundInfo.normal.x == 1) // Left wall
             {
                 if (rb.linearVelocity.y > 0) FaceRightOrLeft(false);
                 else                         FaceRightOrLeft(true);
@@ -214,8 +216,7 @@ public class NewPlayerController : MonoBehaviour
                 return;
             }
 
-            // If right wall:
-            if (rb.linearVelocity.y > 0) FaceRightOrLeft(true); 
+            if (rb.linearVelocity.y > 0) FaceRightOrLeft(true);
             else                         FaceRightOrLeft(false);
 
             return;
@@ -250,7 +251,7 @@ public class NewPlayerController : MonoBehaviour
         {
             isHoldingDownMove = false;
 
-            movementInput = Vector2.zero;
+            movementInput     = Vector2.zero;
 
             if (!isUpsideDown && !isWallRunning) return;
             rb.gravityScale = gravity;
@@ -259,27 +260,30 @@ public class NewPlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
-        // Stopped jumping:
-        if (context.canceled || !canJump)
+        if (context.started)
         {
-            DEBUG1.SetText($"Stopped Jumping");
-            ResetJump();
+            if (!canJump || !isGrounded) return;
+            soundManager.PlayJumpSFX();
+            currentJumpDir   = groundInfo.normal;
+
+            isJumping = true;
+            canJump   = false;
+
+            currentJumpForce = startingJumpForce;
+            //rb.AddForce(jumpSpeed * groundInfo.normal, ForceMode2D.Impulse);
+        }
+
+        if (context.canceled)
+        {
+            EndJump();
 
             return;
         }
 
-        // Started jumping:
-        if (context.started)
-        {
-            DEBUG1.SetText($"Started Jumping");
-            if (!canJump || !isGrounded) return;
-            soundManager.PlayJumpSFX();
-            currentJumpForce = 0;
-            currentJumpDir   = groundInfo.normal;
+        //appliedJump = startingJumpForce * currentJumpDir; //find a way to account for horizontal movement
 
-            //rb.AddForce(jumpSpeed * groundInfo.normal, ForceMode2D.Impulse);
-        }
 
+        /*
         // Reached max jump:
         if (currentJumpForce >= maxJumpForce)
         {
@@ -287,32 +291,35 @@ public class NewPlayerController : MonoBehaviour
             ResetJump();
             return;
         }
-
-        DEBUG1.SetText($"is jumping");
-        currentJumpForce += jumpSpeed;
-        appliedJump       = currentJumpForce * currentJumpDir;
-
-        //Jumping
-
-        // if is currently jumping += velocity
-
-        // if started jumping, set is currently jumping, play sfx, prevent re-input?
-
-        void ResetJump()
-        {
-            currentJumpForce = 0;
-            appliedJump = Vector2.zero;
-
-            canJump = isGrounded;
-        }
+        */
     }
 
-    private void JumpCheck()
+    private void JumpCheck() //to coroutine
     {
-        if (currentJumpForce >= maxJumpForce) return;
+        //if (!isJumping || currentJumpForce >= maxJumpForce) return;
 
-        currentJumpForce += jumpSpeed;
-        appliedJump = currentJumpForce * groundInfo.normal;
+        if (!isJumping) return;
+
+        if (currentJumpForce >= maxJumpForce)
+        {
+            EndJump();
+            return;
+        }
+
+        if (rb.linearVelocityY < 0) currentJumpForce  -= jumpDecceleration; //deccelerate if rising
+
+        appliedJump        = currentJumpForce * currentJumpDir;
+        rb.linearVelocity += appliedJump;
+    }
+
+    private void EndJump()
+    {
+        isJumping = false;
+
+        appliedJump = Vector2.zero;
+        canJump     = isGrounded;
+
+        currentJumpForce = 0;
     }
 
     public void Boost(InputAction.CallbackContext context)
