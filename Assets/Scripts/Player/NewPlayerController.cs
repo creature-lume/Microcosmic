@@ -12,6 +12,8 @@ public class NewPlayerController : MonoBehaviour
     public TextMeshProUGUI DEBUG1;
     public TextMeshProUGUI DEBUG2;
     public TextMeshProUGUI DEBUG3;
+    [SerializeField] private float homemadeGravity = 9.8f;
+    [Space]
 
     [SerializeField] private CinemachinePositionComposer c_PositionComposer;
     [SerializeField] private Rigidbody2D rb;
@@ -43,7 +45,9 @@ public class NewPlayerController : MonoBehaviour
     [Space]
 
     [Header("Jump")]
-    [SerializeField] private float jumpForce = 10f;
+    [SerializeField] private float jumpSpeed    = 1f;
+    [SerializeField] private float maxJumpForce = 10f;
+    private float                  currentJumpForce = 0f;
     float groundAngle;
     [Space]
 
@@ -72,6 +76,11 @@ public class NewPlayerController : MonoBehaviour
     public  UnityEvent RespawnEvent;
     private SoundManager soundManager;
 
+    private Vector2 appliedGravity;
+    private Vector2 appliedMovement;
+    private Vector2 appliedJump;
+    private Vector2 currentJumpDir;
+
     RaycastHit2D groundInfo;
 
     private void OnValidate()
@@ -94,7 +103,8 @@ public class NewPlayerController : MonoBehaviour
         soundManager = SoundManager.instance;
 
         moveSpeed = baseMoveSpeed;
-        rb.gravityScale = gravity;
+        //rb.gravityScale = gravity;
+        rb.gravityScale = 0;
 
         DEBUG1.color = Color.red;
         DEBUG2.color = Color.green;
@@ -107,12 +117,16 @@ public class NewPlayerController : MonoBehaviour
         GroundCheck();
         RotationCheck();
         GravityCheck();
+        MoveCheck();
 
-        ApplyMovement();
+        Vector2 appliedForces = (appliedMovement + appliedJump + appliedGravity);
+        rb.AddForce(appliedForces);
 
-        DEBUG1.SetText($"{groundAngle}°");
-        DEBUG2.SetText($"Wall run: {isWallRunning}");
-        DEBUG3.SetText($"Upside down: {isUpsideDown}");
+        //ApplyMovement();
+
+        DEBUG1.SetText($"isGrounded: {isGrounded}");
+        DEBUG2.SetText($"Gravity: {appliedGravity}");
+        DEBUG3.SetText($"Applied forces: {appliedForces}");
 
         CheckAndFaceDirection();
     }
@@ -149,27 +163,28 @@ public class NewPlayerController : MonoBehaviour
     }
     private void GravityCheck()
     {
-        if ((!isFallForgiven && !isGrounded) || movementInput == Vector2.zero)
+        if (isGrounded)
         {
-            rb.gravityScale = gravity;
+            appliedGravity = Vector2.zero;
             return;
         }
 
-        if (isWallRunning)
+        if (rb.linearVelocityY < 0 && !isWallRunning)
         {
-            rb.gravityScale = 0;
+            appliedGravity += new Vector2(0, -homemadeGravity * Time.deltaTime * 2);
             return;
         }
 
-        if (isUpsideDown)
-        {
-            rb.gravityScale = -gravity;
-            return;
-        }
-
-        rb.gravityScale = gravity;
+        appliedGravity += new Vector2(0, -homemadeGravity * Time.deltaTime);
     }
 
+    private void MoveCheck()
+    {
+        if      (movementInput.x > 0) appliedMovement = transform.right  * moveSpeed;
+        else if (movementInput.x < 0) appliedMovement = -transform.right * moveSpeed;
+
+        else                          appliedMovement = Vector2.zero;
+    }
     private void ApplyMovement()
     {
         if      (movementInput.x > 0) rb.AddForce(transform.right  * moveSpeed, ForceMode2D.Force);
@@ -244,16 +259,60 @@ public class NewPlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
+        // Stopped jumping:
+        if (context.canceled || !canJump)
+        {
+            DEBUG1.SetText($"Stopped Jumping");
+            ResetJump();
+
+            return;
+        }
+
+        // Started jumping:
         if (context.started)
         {
+            DEBUG1.SetText($"Started Jumping");
             if (!canJump || !isGrounded) return;
-
             soundManager.PlayJumpSFX();
+            currentJumpForce = 0;
+            currentJumpDir   = groundInfo.normal;
 
-            rb.AddForce(jumpForce * groundInfo.normal, ForceMode2D.Impulse);
-
-            canJump = false;
+            //rb.AddForce(jumpSpeed * groundInfo.normal, ForceMode2D.Impulse);
         }
+
+        // Reached max jump:
+        if (currentJumpForce >= maxJumpForce)
+        {
+            DEBUG1.SetText($"Reached max jump");
+            ResetJump();
+            return;
+        }
+
+        DEBUG1.SetText($"is jumping");
+        currentJumpForce += jumpSpeed;
+        appliedJump       = currentJumpForce * currentJumpDir;
+
+        //Jumping
+
+        // if is currently jumping += velocity
+
+        // if started jumping, set is currently jumping, play sfx, prevent re-input?
+
+        void ResetJump()
+        {
+            currentJumpForce = 0;
+            appliedJump = Vector2.zero;
+
+            canJump = isGrounded;
+        }
+    }
+
+    private void JumpCheck()
+    {
+        if (currentJumpForce >= maxJumpForce) return;
+
+        currentJumpForce += jumpSpeed;
+        appliedJump = currentJumpForce * groundInfo.normal;
     }
 
     public void Boost(InputAction.CallbackContext context)
