@@ -60,9 +60,10 @@ public class NewPlayerController : MonoBehaviour
 
     [Header("Groundcheck")]
     private bool isGrounded;
+    private bool isFallForgiven;
     private bool canJump;
     [SerializeField] private float groundedDistance;
-    [SerializeField] private float forgiveNotGrounded;
+    [SerializeField] private float forgiveFallDistance;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
 
@@ -73,10 +74,10 @@ public class NewPlayerController : MonoBehaviour
 
     private bool IsWallRunning()
     {
-        return groundAngle == 90 || groundAngle == 180; // have ranges later
+        return groundAngle == 90;
     }
 
-    private bool IsCeilingRunning()
+    private bool IsRunningUpsideDown()
     {
         return groundAngle >= 135 || groundAngle <= -135; //could be 0°? idk, to test
     }
@@ -106,6 +107,7 @@ public class NewPlayerController : MonoBehaviour
         DEBUG1.color = Color.red;
         DEBUG2.color = Color.green;
         DEBUG3.color = Color.blue;
+        DEBUG3.text  = "";
     }
 
     private void FixedUpdate()
@@ -114,23 +116,27 @@ public class NewPlayerController : MonoBehaviour
         RotationCheck();
         GravityCheck();
 
-        if      (movementInput.x > 0) rb.AddForce(transform.right  * moveSpeed, ForceMode2D.Force);
-        else if (movementInput.x < 0) rb.AddForce(-transform.right * moveSpeed, ForceMode2D.Force);
+        ApplyMovement();
 
-        if (!isHoldingDownMove) return;
-        if      (rb.linearVelocity.x < 1) transform.localScale = new Vector3(-scale.x, scale.y, scale.z);
-        else if (rb.linearVelocity.x > 1) transform.localScale = scale;
+        DEBUG1.SetText($"Ground Normal: {groundInfo.normal}");
+        DEBUG2.SetText($"Wall run: {IsWallRunning()}");
+        DEBUG3.SetText($"Upside down: {IsRunningUpsideDown()}");
+
+        CheckAndFaceDirection();
     }
 
     private void GroundCheck()
     {
-        groundInfo  = Physics2D.Raycast(transform.position, groundCheck.position - transform.position, groundedDistance, groundLayer);
-        groundAngle = Vector3.Angle(groundInfo.normal, Vector3.up);
+        groundInfo     = Physics2D.Raycast(transform.position, groundCheck.position - transform.position, groundedDistance, groundLayer);
+        groundAngle    = Vector3.Angle(groundInfo.normal, Vector3.up);
 
-        DEBUG3.text = $"{groundAngle}°";
+        isGrounded     = groundInfo.collider != null;
+        canJump        = isGrounded;
 
-        isGrounded = groundInfo.collider != null;
-        canJump    = isGrounded;
+        isFallForgiven = Physics2D.Raycast(transform.position, groundCheck.position - transform.position, forgiveFallDistance, groundLayer);
+
+        Debug.DrawLine(transform.position, (groundCheck.position), Color.black);
+        Debug.DrawLine(transform.position, (groundCheck.position), Color.yellow);
     }
 
     private void RotationCheck()
@@ -146,7 +152,7 @@ public class NewPlayerController : MonoBehaviour
     }
     private void GravityCheck()
     {
-        if (!isGrounded || movementInput == Vector2.zero)
+        if ((!isFallForgiven && !isGrounded) || movementInput == Vector2.zero)
         {
             rb.gravityScale = gravity;
             return;
@@ -158,13 +164,64 @@ public class NewPlayerController : MonoBehaviour
             return;
         }
 
-        if (IsCeilingRunning())
+        if (IsRunningUpsideDown())
         {
             rb.gravityScale = -gravity;
             return;
         }
 
         rb.gravityScale = gravity;
+    }
+
+    private void ApplyMovement()
+    {
+        if (movementInput.x > 0) rb.AddForce(transform.right * moveSpeed, ForceMode2D.Force);
+        else if (movementInput.x < 0) rb.AddForce(-transform.right * moveSpeed, ForceMode2D.Force);
+    }
+
+    private void CheckAndFaceDirection()
+    {
+        if (!isHoldingDownMove) return;
+
+        if (IsRunningUpsideDown())
+        {
+            if (rb.linearVelocity.x < 0) FaceRightOrLeft(true);
+            else                         FaceRightOrLeft(false); 
+
+            return;
+        }
+
+        if (IsWallRunning())
+        {
+            // If left wall:
+            if (groundInfo.normal.x == 1) 
+            {
+                if (rb.linearVelocity.y > 0) FaceRightOrLeft(false);
+                else                         FaceRightOrLeft(true);
+
+                return;
+            }
+
+            // If right wall:
+            if (rb.linearVelocity.y > 0) FaceRightOrLeft(true); 
+            else                         FaceRightOrLeft(false);
+
+            return;
+        }
+
+        if (rb.linearVelocity.x < 0) FaceRightOrLeft(false);
+        else                         FaceRightOrLeft(true);
+    }
+
+    private void FaceRightOrLeft(bool faceRight)
+    {
+        if (faceRight)
+        {
+            transform.localScale = scale;
+            return;
+        }
+
+        transform.localScale = new Vector3(-scale.x, scale.y, scale.z);
     }
 
     #region InputActions
@@ -183,7 +240,7 @@ public class NewPlayerController : MonoBehaviour
 
             movementInput = Vector2.zero;
 
-            if (!IsCeilingRunning() && !IsWallRunning()) return;
+            if (!IsRunningUpsideDown() && !IsWallRunning()) return;
             rb.gravityScale = gravity;
         }
     }
