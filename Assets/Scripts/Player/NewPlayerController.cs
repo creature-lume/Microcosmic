@@ -60,6 +60,8 @@ public class NewPlayerController : MonoBehaviour
 
     [Header("Groundcheck")]
     private bool isGrounded;
+    private bool isWallRunning;
+    private bool isUpsideDown;
     private bool isFallForgiven;
     private bool canJump;
     [SerializeField] private float groundedDistance;
@@ -71,16 +73,6 @@ public class NewPlayerController : MonoBehaviour
     private SoundManager soundManager;
 
     RaycastHit2D groundInfo;
-
-    private bool IsWallRunning()
-    {
-        return groundAngle == 90;
-    }
-
-    private bool IsRunningUpsideDown()
-    {
-        return groundAngle >= 135 || groundAngle <= -135; //could be 0°? idk, to test
-    }
 
     private void OnValidate()
     {
@@ -118,9 +110,9 @@ public class NewPlayerController : MonoBehaviour
 
         ApplyMovement();
 
-        DEBUG1.SetText($"Ground Normal: {groundInfo.normal}");
-        DEBUG2.SetText($"Wall run: {IsWallRunning()}");
-        DEBUG3.SetText($"Upside down: {IsRunningUpsideDown()}");
+        DEBUG1.SetText($"{groundAngle}°");
+        DEBUG2.SetText($"Wall run: {isWallRunning}");
+        DEBUG3.SetText($"Upside down: {isUpsideDown}");
 
         CheckAndFaceDirection();
     }
@@ -137,6 +129,9 @@ public class NewPlayerController : MonoBehaviour
 
         Debug.DrawLine(transform.position, (groundCheck.position), Color.black);
         Debug.DrawLine(transform.position, (groundCheck.position), Color.yellow);
+
+        isWallRunning = (groundAngle == 90);
+        isUpsideDown  = (groundAngle  > 90);
     }
 
     private void RotationCheck()
@@ -148,6 +143,8 @@ public class NewPlayerController : MonoBehaviour
         }
 
         orientation        = Quaternion.FromToRotation(transform.up, groundInfo.normal);
+
+        if (orientation == transform.rotation) return;
         transform.rotation = Quaternion.Slerp(transform.rotation, orientation * transform.rotation, Time.deltaTime * rotationSmooth);
     }
     private void GravityCheck()
@@ -158,13 +155,13 @@ public class NewPlayerController : MonoBehaviour
             return;
         }
 
-        if (IsWallRunning())
+        if (isWallRunning)
         {
             rb.gravityScale = 0;
             return;
         }
 
-        if (IsRunningUpsideDown())
+        if (isUpsideDown)
         {
             rb.gravityScale = -gravity;
             return;
@@ -175,7 +172,7 @@ public class NewPlayerController : MonoBehaviour
 
     private void ApplyMovement()
     {
-        if (movementInput.x > 0) rb.AddForce(transform.right * moveSpeed, ForceMode2D.Force);
+        if      (movementInput.x > 0) rb.AddForce(transform.right  * moveSpeed, ForceMode2D.Force);
         else if (movementInput.x < 0) rb.AddForce(-transform.right * moveSpeed, ForceMode2D.Force);
     }
 
@@ -183,7 +180,7 @@ public class NewPlayerController : MonoBehaviour
     {
         if (!isHoldingDownMove) return;
 
-        if (IsRunningUpsideDown())
+        if (isUpsideDown)
         {
             if (rb.linearVelocity.x < 0) FaceRightOrLeft(true);
             else                         FaceRightOrLeft(false); 
@@ -191,7 +188,7 @@ public class NewPlayerController : MonoBehaviour
             return;
         }
 
-        if (IsWallRunning())
+        if (isWallRunning)
         {
             // If left wall:
             if (groundInfo.normal.x == 1) 
@@ -240,7 +237,7 @@ public class NewPlayerController : MonoBehaviour
 
             movementInput = Vector2.zero;
 
-            if (!IsRunningUpsideDown() && !IsWallRunning()) return;
+            if (!isUpsideDown && !isWallRunning) return;
             rb.gravityScale = gravity;
         }
     }
