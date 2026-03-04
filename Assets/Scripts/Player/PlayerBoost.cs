@@ -97,6 +97,12 @@ public class PlayerBoost : MonoBehaviour
         secondGauge.SetMinMaxSlider(0, 100);
         thirdGauge.SetMinMaxSlider(0, 100);
     }
+    private void Update()
+    {
+        //DEBUG ONLY
+        gauge = 300;
+    }
+
     public void StartBoost()
     {
         if (gauge < requiredStartAmount)

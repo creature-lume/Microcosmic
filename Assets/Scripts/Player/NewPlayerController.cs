@@ -8,86 +8,95 @@ using UnityEngine.InputSystem;
 
 public class NewPlayerController : MonoBehaviour
 {
-    private bool isInControl;
-
+    // ------------------------------------------------------------------
+    [Header("Debug Only")]
     public TextMeshProUGUI DEBUG1;
     public TextMeshProUGUI DEBUG2;
     public TextMeshProUGUI DEBUG3;
-    [SerializeField] private float homemadeGravity = 9.8f;
     [Space]
 
+    // ------------------------------------------------------------------
+    [Header("Misc References")]
     [SerializeField] private CinemachinePositionComposer c_PositionComposer;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private PlayerBoost playerBoost;
+    private SoundManager soundManager;
     [Space]
 
-    [Header("Sprite")]
-    [SerializeField] private Transform spriteTransform;
-    [SerializeField] private Animator  spriteAnimator;
-    [SerializeField] private Animator  trailAnimator;
-
-    [Header("Movement")]
-    // Movement Speed
-    [SerializeField] private float baseMoveSpeed = 10f;
-    private Vector2 movementInput;
-    private float moveSpeed;
-    private bool isHoldingDownMove;
-    // Wall & Ceiling running
-
-    // Rotation
-    [SerializeField] private float rotationSmooth;
-    private Quaternion orientation;
-    // Skill
-    private Vector3 scale;
-    [Space]
-
-    [Header("Boost")]
-    [SerializeField] private float boostSpeed;
-    public UnityEvent<bool> BoostUpdate;
-    [Space]
-
-    [Header("Jump")]
-    [SerializeField] private float jumpDecceleration         = 1f;
-    [SerializeField] private float startingJumpForce = 10f;
-    [SerializeField] private float maxJumpForce      = 10f;
-    [SerializeField] private float maxJumpTime       = 1f;
-    private float                  currentJumpForce  = 0f;
-    private bool                   isJumping;
-    [Space]
-
-    [Header("Gravity")]
-    [SerializeField] private float gravity;
-    [SerializeField] private float floatingCapsuleOffset;
-    [Space]
-
-    [Header("Level")]
-    [SerializeField] private Transform levelStart;
-    [SerializeField] private float     startDelay;
-    private bool isInLaunchingSequence = true;
-    private Prompt currentPrompt;
-    [Space]
-
-    [Header("Groundcheck")]
+    // ------------------------------------------------------------------
+    [Header("Ground Check")]
+    [SerializeField] private float     groundedDistance;
+    [SerializeField] private float     forgiveFallDistance;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
+    private RaycastHit2D groundInfo;
+    private float groundAngle;
     private bool isGrounded;
     private bool isWallRunning;
     private bool isUpsideDown;
     private bool isFallForgiven;
-    private bool canJump;
-    private float groundAngle;
-    [SerializeField] private float groundedDistance;
-    [SerializeField] private float forgiveFallDistance;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
+    [Space]
 
-    public  UnityEvent   RespawnEvent;
-    private SoundManager soundManager;
+    // ------------------------------------------------------------------
+    [Header("Rotation")]
+    [SerializeField] private float rotationSmooth;
+    private Quaternion orientation;
+    private bool isFacingRight = true;
+    [Space]
 
+    // ------------------------------------------------------------------
+    [Header("Gravity")]
+    [SerializeField] private float gravity             = 98f;
+    [SerializeField] private float fallGravityModifier = 2;
     private Vector2 appliedGravity;
-    private Vector2 appliedMovement;
-    private Vector2 appliedJump;
-    private Vector2 currentJumpDir;
+    [Space]
 
-    RaycastHit2D groundInfo;
+    // ------------------------------------------------------------------
+    [Header("Movement")]
+    [SerializeField] private float baseMoveSpeed = 10f;
+    private float   moveSpeed;
+    private Vector2 movementInput;
+    private bool    isHoldingDownMove;
+    private bool    isInControl;
+    private Vector2 appliedMovement;
+    [Space]
+
+    // ------------------------------------------------------------------
+    [Header("Boost")]
+    [SerializeField] private float boostSpeed;
+    public UnityEvent<bool> BoostUpdate;
+    private bool isBoosting => playerBoost.IsBoosting();
+
+    [Space]
+
+    // ------------------------------------------------------------------
+    [Header("Jump")]
+    [SerializeField] private float jumpForce   = 7f;
+    [SerializeField] private float maxJumpTime = 1f;
+    private bool canJump;
+    private bool isJumping;
+    private Vector2 appliedJump;
+    [Space]
+
+    // ------------------------------------------------------------------
+    [Header("Sprite")]
+    [SerializeField] private Transform spriteTransform;
+    [SerializeField] private Animator  spriteAnimator;
+    [SerializeField] private Animator  trailAnimator;
+    private Vector3 scale;
+    [Space]
+
+    // ------------------------------------------------------------------
+    [Header("Respawn")]
+    public UnityEvent RespawnEvent;
+    [Space]
+
+    // ------------------------------------------------------------------
+    [Header("Level")]
+    [SerializeField] private Transform levelStart;
+    [SerializeField] private float     startDelay;
+    //private bool isInLaunchingSequence = true;
+    //private Prompt currentPrompt;
 
     private void OnValidate() { scale = transform.localScale; }
 
@@ -95,11 +104,16 @@ public class NewPlayerController : MonoBehaviour
     {
         if (!rb) rb = GetComponent<Rigidbody2D>();
         if (!playerBoost) playerBoost = GetComponent<PlayerBoost>();
+        if (!playerBoost)
+        {
+            Debug.LogError($"Player boost is null.");
+            Debug.DebugBreak();
+        }
 
         playerBoost.OnGaugeDepleted.AddListener(EndBoost);
 
-        isInControl = false;
-        isInLaunchingSequence = true;
+        //isInControl = false;
+        //isInLaunchingSequence = true;
         //TriggerRunAnimation();
 
         //transform.position = levelStart.position;
@@ -112,6 +126,8 @@ public class NewPlayerController : MonoBehaviour
         DEBUG1.color = Color.red;
         DEBUG2.color = Color.green;
         DEBUG3.color = Color.blue;
+
+        isInControl = true;
     }
 
     private void FixedUpdate()
@@ -120,24 +136,25 @@ public class NewPlayerController : MonoBehaviour
         RotationCheck();
         GravityCheck();
         MoveCheck();
+        CameraCheck();
 
         ApplyMovement();
 
-        DEBUG1.SetText($"");
-        DEBUG2.SetText($"");
-        DEBUG3.SetText($"");
+        DEBUG1.SetText($"isHoldingDownMove: {isHoldingDownMove}");
+        DEBUG2.SetText($"isFacingRight: {isFacingRight}");
+        DEBUG3.SetText($"isBoosting: {isBoosting}");
 
         CheckAndFaceDirection();
     }
 
     private void GroundCheck()
     {
-        groundInfo     = Physics2D.Raycast(transform.position, groundCheck.position - transform.position, groundedDistance, groundLayer);
-        groundAngle    = Vector3.Angle(groundInfo.normal, Vector3.up);
+        groundInfo  = Physics2D.Raycast(transform.position, groundCheck.position - transform.position, groundedDistance, groundLayer);
+        groundAngle = Vector3.Angle(groundInfo.normal, Vector3.up);
 
-        isGrounded     = groundInfo.collider != null;
-        canJump        = isGrounded;
-
+        isGrounded  = groundInfo.collider != null;
+        canJump     = isGrounded;
+        
         isFallForgiven = Physics2D.Raycast(transform.position, groundCheck.position - transform.position, forgiveFallDistance, groundLayer);
 
         Debug.DrawLine(transform.position, (groundCheck.position), Color.black);
@@ -148,7 +165,6 @@ public class NewPlayerController : MonoBehaviour
 
         if (isGrounded && !canJump && isJumping) EndJump();
     }
-
     private void RotationCheck()
     {
         if (!isGrounded)
@@ -162,21 +178,57 @@ public class NewPlayerController : MonoBehaviour
     }
     private void GravityCheck()
     {
-        if (isGrounded && !isFallForgiven)
+        //if (isWallRunning)
+        //{
+        //    appliedGravity = -gravity * groundInfo.normal;
+        //    return;
+        //}
+
+        if (isBoosting && isGrounded /*&& isFallForgiven*/)
         {
-            appliedGravity = Vector2.zero;
-                return;
+            appliedGravity = (appliedMovement.magnitude * 0.5f) * -groundInfo.normal;
+            return;
+        }
+
+        if (isGrounded)
+        {
+            appliedGravity = (-gravity * 0.1f) * groundInfo.normal;
+            return;
         }
 
         if (rb.linearVelocityY < 0 && !isWallRunning)
         {
-            appliedGravity += new Vector2(0, -homemadeGravity * Time.deltaTime * 2);
+            appliedGravity += new Vector2(0, -gravity * Time.deltaTime * fallGravityModifier);
             return;
         }
 
-        appliedGravity += new Vector2(0, -homemadeGravity * Time.deltaTime);
+        appliedGravity += new Vector2(0, -gravity * Time.deltaTime);
     }
 
+    #region Movement
+    public void Move(InputAction.CallbackContext context)
+    {
+        if (!isInControl) return;
+
+        if (context.started)
+        {
+            if ((isWallRunning || isUpsideDown) && isHoldingDownMove && !isJumping) return;
+
+            movementInput     = context.ReadValue<Vector2>();
+            isHoldingDownMove = true;
+        }
+
+        if (context.canceled)
+        {
+            isHoldingDownMove = false;
+            if (isBoosting) return;
+
+            movementInput     = Vector2.zero;
+
+            //if (!isUpsideDown && !isWallRunning) return;
+            //appliedGravity += new Vector2(0, -gravity * Time.deltaTime * fallGravityModifier);
+        }
+    }
     private void MoveCheck()
     {
         if      (movementInput.x > 0) appliedMovement = transform.right  * moveSpeed;
@@ -190,39 +242,45 @@ public class NewPlayerController : MonoBehaviour
         rb.AddForce(appliedForces);
         rb.linearVelocity += appliedJump;
     }
+    #endregion
 
+    #region FaceDirection
     private void CheckAndFaceDirection()
     {
         if (!isHoldingDownMove) return;
 
         if (isUpsideDown)
         {
-            if (rb.linearVelocity.x < 0) FaceRightOrLeft(true);
-            else                         FaceRightOrLeft(false); 
+            if (rb.linearVelocity.x < 0) SetIsFacingRight(true);
+            else                         SetIsFacingRight(false); 
             return;
         }
 
         if (isWallRunning)
         {
-            if (groundInfo.normal.x == 1) // Left wall
+            // Left wall
+            if (groundInfo.normal.x == 1) 
             {
-                if (rb.linearVelocity.y > 0) FaceRightOrLeft(false);
-                else                         FaceRightOrLeft(true);
+                if (rb.linearVelocity.y > 0) SetIsFacingRight(false);
+                else                         SetIsFacingRight(true);
                 return;
             }
 
-            if (rb.linearVelocity.y > 0) FaceRightOrLeft(true);
-            else                         FaceRightOrLeft(false);
+            // Right wall
+            if (rb.linearVelocity.y > 0) SetIsFacingRight(true);
+            else                         SetIsFacingRight(false);
             return;
         }
 
-        if (rb.linearVelocity.x < 0) FaceRightOrLeft(false);
-        else                         FaceRightOrLeft(true);
+        if (rb.linearVelocity.x < 0) SetIsFacingRight(false);
+        else                         SetIsFacingRight(true);
     }
 
-    private void FaceRightOrLeft(bool faceRight)
+    private void SetIsFacingRight(bool faceRight)
     {
-        if (faceRight)
+        isFacingRight = faceRight;
+
+        if (isFacingRight)
         {
             transform.localScale = scale;
             return;
@@ -230,30 +288,18 @@ public class NewPlayerController : MonoBehaviour
 
         transform.localScale = new Vector3(-scale.x, scale.y, scale.z);
     }
+    #endregion
 
-    #region InputActions
-    public void Move(InputAction.CallbackContext context)
+    private void CameraCheck()
     {
-        if (context.started)
-        {
-            isHoldingDownMove = true;
-
-            movementInput = context.ReadValue<Vector2>();
-        }
-
-        if (context.canceled)
-        {
-            isHoldingDownMove = false;
-
-            movementInput     = Vector2.zero;
-
-            if (!isUpsideDown && !isWallRunning) return;
-            appliedGravity += new Vector2(0, -homemadeGravity * Time.deltaTime * 2);
-        }
+        c_PositionComposer.Lookahead.IgnoreY = !isWallRunning;
     }
 
+    #region Jump
     public void Jump(InputAction.CallbackContext context)
     {
+        if (!isInControl) return;
+
         if (context.started)
         {
             if (!canJump || !isGrounded) return;
@@ -270,8 +316,12 @@ public class NewPlayerController : MonoBehaviour
         isJumping = true;
         canJump   = false;
 
-        //currentJumpDir = groundInfo.normal;
-        appliedJump = startingJumpForce * groundInfo.normal;
+        if (isWallRunning || isUpsideDown)
+        {
+            appliedJump = jumpForce * groundInfo.normal;
+            //appliedGravity = appliedJump;
+        }
+        else appliedJump = jumpForce * groundInfo.normal;
 
         yield return new WaitForSeconds(maxJumpTime);
         
@@ -285,63 +335,48 @@ public class NewPlayerController : MonoBehaviour
         appliedJump = Vector2.zero;
         canJump     = isGrounded;
 
-        currentJumpForce = 0;
-
         StopCoroutine(JumpRoutine());
     }
-
+    #endregion
+    #region Boost
     public void Boost(InputAction.CallbackContext context)
     {
-        /*
-        if (isInLaunchingSequence && currentPrompt)
-        {
-            currentPrompt.ReceiveInput(LaunchSequence.LaunchInputs.Shift);
-        }
-
         if (!isInControl) return;
-        */
 
         if (context.performed)
         {
-            //if (isInLaunchingSequence) return;
-            //if (hurtFlag) return;
-            //if (!playerBoost.CanBoost()) return;
-            //DoBoost();
+            TryBoost();
+
+            if (!isBoosting) return;
+
             moveSpeed = boostSpeed;
+            if (isHoldingDownMove) return;
+
+            if (isFacingRight) movementInput = Vector2.right;
+            else               movementInput = Vector2.left;
+
             return;
         }
 
-        if (context.canceled)
-        {
-            //if (isInLaunchingSequence) return;
-            //EndBoost();
-            moveSpeed = baseMoveSpeed;
-        }
+        if (context.canceled) EndBoost();
     }
-    public void DoBoost()
+    public void TryBoost()
     {
-        moveSpeed = boostSpeed;
-
-        //BoostUpdate.Invoke(true);
-        //playerBoost.StartBoost();
-
-        //SetHorizontalMovement(isRight);
+        BoostUpdate.Invoke(true);
+        playerBoost.StartBoost();
     }
 
     public void EndBoost()
     {
         moveSpeed = baseMoveSpeed;
-        //SetLaunchUp();
+        if (!isHoldingDownMove) movementInput = Vector2.zero;
 
-        //BoostUpdate.Invoke(false);
-
-        //if (!isHoldingDownDirection) StopHorizontalMovement();
-        //else TriggerIdleAnimation();
+        BoostUpdate.Invoke(false);
     }
+    #endregion
 
     internal void SetCurrentPrompt(Prompt prompt)
     {
         throw new NotImplementedException();
     }
-    #endregion
 }
