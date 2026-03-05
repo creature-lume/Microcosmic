@@ -165,10 +165,13 @@ public class PlayerController : MonoBehaviour
 
     // --------------------------------------- START ------------------------------------------
 
+    private void Awake()
+    {
+        Debug.LogWarning($"This script is deprecated and was refactored into PlayerController. Use it instead.");
+        Debug.Break();
+    }
     private void Start()
     {
-        Debug.LogWarning($"PlayerController is deprecated. Use NewPlayerController instead.");
-
         baseXScale = transform.localScale.x;
 
         if (!rb)                   rb = GetComponent<Rigidbody2D>();

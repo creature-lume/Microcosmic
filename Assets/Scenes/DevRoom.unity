@@ -46033,6 +46033,16 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
+  - first: {x: 0, y: 0, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 99
+      m_TileSpriteIndex: 99
+      m_TileMatrixIndex: 4
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   - first: {x: 1, y: 0, z: 0}
     second:
       serializedVersion: 2
@@ -72839,6 +72849,16 @@ Tilemap:
       m_TileIndex: 1
       m_TileSpriteIndex: 1
       m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: 43, y: 22, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 99
+      m_TileSpriteIndex: 99
+      m_TileMatrixIndex: 4
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
@@ -146743,7 +146763,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 5a7c1ab647585d44e841843dc1a8c18b, type: 2}
   - m_RefCount: 3
     m_Data: {fileID: 11400000, guid: 283f4dbb04273c24796c798cbf4f7491, type: 2}
-  - m_RefCount: 3
+  - m_RefCount: 5
     m_Data: {fileID: 11400000, guid: dfdd67dfc65edcc41ab57a947a5e7d05, type: 2}
   - m_RefCount: 3
     m_Data: {fileID: 11400000, guid: ce21655fa97b35849af34021355b7958, type: 2}
@@ -146974,7 +146994,7 @@ Tilemap:
     m_Data: {fileID: 959042725, guid: aa403a84569841f47b8d30da1f594bc4, type: 3}
   - m_RefCount: 3
     m_Data: {fileID: -79376906, guid: aa403a84569841f47b8d30da1f594bc4, type: 3}
-  - m_RefCount: 3
+  - m_RefCount: 5
     m_Data: {fileID: -1024733047, guid: aa403a84569841f47b8d30da1f594bc4, type: 3}
   - m_RefCount: 3
     m_Data: {fileID: -448504746, guid: aa403a84569841f47b8d30da1f594bc4, type: 3}
@@ -147079,7 +147099,7 @@ Tilemap:
       e31: 0
       e32: 0
       e33: 1
-  - m_RefCount: 515
+  - m_RefCount: 517
     m_Data:
       e00: 1
       e01: 0
@@ -147098,7 +147118,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 11227
+  - m_RefCount: 11229
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   - m_RefCount: 0
     m_Data: {r: NaN, g: NaN, b: NaN, a: NaN}
@@ -152526,6 +152546,10 @@ PrefabInstance:
     - target: {fileID: 1411353748066839452, guid: 8ed86a3b517605d409a2bd2d1e847a3e, type: 3}
       propertyPath: m_Name
       value: SonicBoom
+      objectReference: {fileID: 0}
+    - target: {fileID: 1411353748066839452, guid: 8ed86a3b517605d409a2bd2d1e847a3e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3501219945750757466, guid: 8ed86a3b517605d409a2bd2d1e847a3e, type: 3}
       propertyPath: launchSequence
@@ -161720,7 +161744,7 @@ GameObject:
   - component: {fileID: 1629571775}
   - component: {fileID: 1629571774}
   m_Layer: 0
-  m_Name: Rocket
+  m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161982,6 +162006,7 @@ MonoBehaviour:
   rotationSmooth: 360
   fallRotationSmooth: 4
   gravity: 98
+  maxGravity: 300
   fallGravityModifier: 2
   keepGroundedGravityAttenuation: 0.1
   baseMoveSpeed: 80
@@ -161990,6 +162015,7 @@ MonoBehaviour:
   boostOnlyAngleMin: 80
   boostOnlyAngleMax: 180
   boostGravityAttenuation: 0.5
+  boostCameraYankTime: 1
   BoostUpdate:
     m_PersistentCalls:
       m_Calls:

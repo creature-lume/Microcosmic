@@ -107,6 +107,29 @@ public class NewPlayerController : MonoBehaviour
 
     private void OnValidate() { scale = transform.localScale; }
 
+    // PLEASE READ (to the corrector):
+    //
+    // This script is a refactored version of "OldPlayerController.cs", which was rushed for a game jam
+    // The goal was to make a modular, adaptive, (as glitchless as possible) physics based sonic-like player controller
+    //      (Specifically based on Sonic Rush and its boost mechanic)
+    //
+    // The old script was locked to 8 jumping directions, and relied on switch cases on tilemap tags
+    // Also, it only had three gravities: negative, 0, or positive, because it relied on Unity's built-in rigidbody gravity
+    // This meant that the player was susceptible to slide off a wall if they had some residue force sending them away from it
+    //
+    // This new script should work regardless of tags, facillitating Level Design as there is no need to work on 10 tilemaps
+    //      (the old 10 tilemaps were: Launching Up/UpRight/Right/DownRight/Down/DownLeft/Left/LeftUp, NoLaunch, and HiddenArea)
+    //      There are now only 2 tilemaps: the level tilemap (Stage) and HiddenArea
+    // This new script also added a gauged jump, which was absent before
+    // It also added a feedback to better teach the player that they must boost to go up slopes (slideInertia)
+    // Custom gravity was made instead of the built-in RigidBody gravity
+    //
+    // The player is still sometimes susceptible to randomly falling off of upside-down-surfaces or getting launched into a wall
+    //      (although it is way less glitchy than the old spaghetti controller)
+    // I would appreciate it if you could document these occurrences or offer potential causes or solutions
+    // Additionally, since it relies heavily on surface normals and Unity's default mesh collider tends to be faulty, level element colliders must
+    // be check manually to make sure there is no odd normal (such as a 90° angle on a rounded slope) which could make the player fall off
+
     public void Awake()
     {
         if (!rb)                   rb = GetComponent<Rigidbody2D>();
@@ -141,9 +164,9 @@ public class NewPlayerController : MonoBehaviour
 
         ApplyMovement();
 
-        DEBUG1.SetText($"groundAngle: {groundAngle}");
-        DEBUG2.SetText($"isInSlideInertia: {isInSlideInertia}");
-        DEBUG3.SetText($"Ground Normal: {groundInfo.normal}");
+        DEBUG1.SetText($"");
+        DEBUG2.SetText($"");
+        DEBUG3.SetText($"");
 
         CheckAndFaceDirection();
         AnimationCheck();
@@ -157,9 +180,6 @@ public class NewPlayerController : MonoBehaviour
         isGrounded  = groundInfo.collider != null;
         canJump     = isGrounded;
         
-        Debug.DrawLine(transform.position, (groundCheck.position), Color.black);
-        Debug.DrawLine(transform.position, (groundCheck.position), Color.yellow);
-
         isWallRunning = (groundAngle == 90);
         isUpsideDown  = (groundAngle  > 90);
 
@@ -336,10 +356,7 @@ public class NewPlayerController : MonoBehaviour
     }
     #endregion
 
-    private void CameraCheck()
-    {
-        c_PositionComposer.Lookahead.IgnoreY = !isWallRunning;
-    }
+    private void CameraCheck() { c_PositionComposer.Lookahead.IgnoreY = !isWallRunning; }
 
     #region Jump
     public void Jump(InputAction.CallbackContext context)
