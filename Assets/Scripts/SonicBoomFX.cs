@@ -11,6 +11,8 @@ public class SonicBoomFX : MonoBehaviour
 
     private void Start()
     {
+        //Debug.LogWarning("Script flagged as using the deprecated PlayerController");
+
         if (launchSequence == null)
         {
             Debug.LogWarning("Launch Sequence Reference not set");
@@ -44,6 +46,7 @@ public class SonicBoomFX : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out PlayerController player)) gameObject.SetActive(false);
+        if (collision.TryGetComponent(out NewPlayerController nPlayer)) gameObject.SetActive(false);
+        else if (collision.TryGetComponent(out PlayerController player)) gameObject.SetActive(false);
     }
 }

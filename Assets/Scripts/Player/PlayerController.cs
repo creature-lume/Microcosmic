@@ -1,6 +1,5 @@
 using System.Collections;
 using Unity.Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -165,8 +164,11 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     // --------------------------------------- START ------------------------------------------
+
     private void Start()
     {
+        Debug.LogWarning($"PlayerController is deprecated. Use NewPlayerController instead.");
+
         baseXScale = transform.localScale.x;
 
         if (!rb)                   rb = GetComponent<Rigidbody2D>();
@@ -189,6 +191,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // --------------------------------------- UPDATE ------------------------------------------
+
     private void FixedUpdate()
     {
         if (isInLaunchingSequence)
@@ -348,6 +351,7 @@ public class PlayerController : MonoBehaviour
     {
         if (isInLaunchingSequence) return;
         isWallRunning = false;
+
         switch (jumpDir) //I am so sorry for this ugly ass code but this is a jam we gotta ball
         {
             case LaunchDir.Up:
@@ -701,10 +705,12 @@ public class PlayerController : MonoBehaviour
     }
 
     #region UnityTool
+    /*
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(_groundCheckPos.position, _groundCheckSize);
     }
+    */
     #endregion
 }

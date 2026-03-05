@@ -1,0 +1,1045 @@
+fileFormatVersion: 2
+guid: 2cfbfc1784751c14295c9f7d268443be
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3783389293790806585
+    second: BigLoop_0
+  - first:
+      213: -4916561885751579407
+    second: BigLoop_1
+  - first:
+      213: 1182295490965310260
+    second: BigLoop_2
+  - first:
+      213: 5502207949190467353
+    second: BigLoop_3
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 256
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BigLoop_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2048
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: -127.749985}
+        - {x: 128, y: -127.749985}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 7cd35988b73be7bc0800000000000000
+      internalID: -3783389293790806585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_1
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 2048
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 37, y: -95}
+        - {x: 91, y: -55}
+        - {x: 128, y: -30}
+        - {x: 128, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: -128}
+        - {x: -3, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 1fc6d83930dd4cbb0800000000000000
+      internalID: -4916561885751579407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_2
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 2048
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: -22, y: 31}
+        - {x: 54, y: 66}
+        - {x: 128, y: 94}
+        - {x: 128, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: -30}
+        - {x: -78, y: 0}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 43b88862c7b586010800000000000000
+      internalID: 1182295490965310260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_3
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 2048
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: -66, y: 113}
+        - {x: -35, y: 122}
+        - {x: -11, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: 94}
+        - {x: -101, y: 103}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 91f04d35af4cb5c40800000000000000
+      internalID: 5502207949190467353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_4
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 2048
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: 17.187561, y: 128}
+        - {x: 17.187561, y: 127.625015}
+        - {x: 67.81256, y: 113.000015}
+        - {x: 122.93756, y: 96.125015}
+        - {x: 128, y: 96.125015}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 3992ac85a8f98c0439ea23051e2a1df2
+      internalID: -1174389213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_5
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 2048
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: -128, y: 128}
+        - {x: -127.874954, y: 95.000015}
+        - {x: -59.249954, y: 68.000015}
+        - {x: 21.750046, y: 30.875015}
+        - {x: 39.750046, y: 21.875015}
+        - {x: 128, y: -30}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 6d6dd419344b8504dbe80eae5700df3b
+      internalID: 1924966785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_6
+      rect:
+        serializedVersion: 2
+        x: 1792
+        y: 2048
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: -30}
+        - {x: -64, y: -75}
+        - {x: 3, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 71998f438a0a76e42af7c1103490e0de
+      internalID: 1664268162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_7
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 2048
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: -127.749985, y: 128}
+        - {x: -127.749985, y: -127.749985}
+        - {x: 128, y: -127.749985}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: a1c1317ba018bfd47b5211fab2dee3f7
+      internalID: 915906600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1792
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 77, y: -61}
+        - {x: 128, y: 2.6875305}
+        - {x: 128, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: -128}
+        - {x: 30, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: b664575eba222e64c80fb4122f6df205
+      internalID: -1787697046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_9
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 1792
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: -3, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: 3}
+        - {x: -63, y: 73}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 35bac587b71c3a04591804a042e01e5d
+      internalID: 1779949713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_10
+      rect:
+        serializedVersion: 2
+        x: 1792
+        y: 1792
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: 3, y: 128}
+        - {x: 68, y: 68}
+        - {x: 128, y: 3}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 7e3d3d72c6a183b4caef5abc547ebde7
+      internalID: -1799461282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_11
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 1792
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: 3}
+        - {x: -77, y: -60}
+        - {x: -30, y: -128}
+        - {x: 128, y: -127.81247}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: bdd29494d65327743a0a5d989497a5b8
+      internalID: 1335647260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1536
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: -75.375, y: -78.374954}
+        - {x: -49.5, y: -15.374954}
+        - {x: -3.375, y: 72.375046}
+        - {x: 15, y: 104}
+        - {x: 30, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: -128}
+        - {x: -94, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 1df34790792228949b0e8e9b4f7d94f6
+      internalID: 971598603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_13
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 1536
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: -30, y: 128}
+        - {x: -6.2499847, y: 88.125046}
+        - {x: 39.875015, y: 3.7500458}
+        - {x: 78.125015, y: -85.124954}
+        - {x: 94, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 5ba518bc43b05bf4c93afdb7eb3bc031
+      internalID: -341181177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1280
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: -121, y: 38}
+        - {x: -106.875, y: 88.06256}
+        - {x: -100, y: 110}
+        - {x: -94, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: 10}
+        - {x: -126, y: 16}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 0d4596d24a7147444bf389321a984abd
+      internalID: -1074164879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_15
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 1280
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: 94, y: 128}
+        - {x: 102, y: 104}
+        - {x: 114, y: 67}
+        - {x: 128, y: 10}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 3210fa6c7a360854facda95846f44cac
+      internalID: -1117031577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 768
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: -111, y: -75}
+        - {x: -128, y: -11}
+        - {x: -128, y: -128}
+        - {x: -94, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 80fdbcac0cff5b5418cffeea4d5518f3
+      internalID: -1434595295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_17
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 768
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: -11}
+        - {x: 113.000015, y: -66.18748}
+        - {x: 94, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 35f8b3d8da2ca5f4d9e1ae97488fc589
+      internalID: 220465287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 5, y: -87}
+        - {x: -28, y: -27}
+        - {x: -60, y: 39}
+        - {x: -94, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: -128}
+        - {x: 30, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 681d28bf74c07dc4db0d03c42220db43
+      internalID: 2004011018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_19
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 512
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: 94, y: 128}
+        - {x: 57.875015, y: 36.125004}
+        - {x: 30.875015, y: -21.249996}
+        - {x: 6.1250153, y: -67.37499}
+        - {x: -30, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 5a0fbe4bce2dec646904e308e66dab15
+      internalID: -9427107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: -3}
+        - {x: 72, y: 67}
+        - {x: 30, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 3f2668d57fc849f4fa9415e4665727c9
+      internalID: 1165207589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_21
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: -70, y: -66}
+        - {x: -128, y: -3}
+        - {x: -128, y: -128}
+        - {x: -3, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: e6645d68067e90840939ae0af632973f
+      internalID: 368245625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_22
+      rect:
+        serializedVersion: 2
+        x: 1792
+        y: 256
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: -3}
+        - {x: 74, y: -62}
+        - {x: 2, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 3e564287579c44545a62c61b6b183df1
+      internalID: 781259669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_23
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 256
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: -30, y: 128}
+        - {x: -84.999985, y: 51.8125}
+        - {x: -128, y: -3}
+        - {x: -128, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: b5a2d7d17793284459c026ea3ca289e6
+      internalID: -2060499078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: d956ec3c4deb4ad4a8d173f6800be9b3
+      internalID: 215807343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_25
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 30}
+        - {x: 52, y: 84}
+        - {x: -3, y: 128}
+        - {x: -128, y: 128}
+        - {x: -128, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 401682ef068af864e9181674479a983e
+      internalID: -1912546458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_26
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: -94}
+        - {x: 78.875, y: -75.375}
+        - {x: 15.875004, y: -49.5}
+        - {x: -71.87499, y: -3.375}
+        - {x: -128, y: 30}
+        - {x: -128, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: ff7b417424cd14e478b77e824c3c5480
+      internalID: -608913162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_27
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: -75, y: -111}
+        - {x: -128, y: -94}
+        - {x: -128, y: -128}
+        - {x: -10, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 9b9f76d5869cbd04c89d179e3e39520e
+      internalID: 468740482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_28
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: -94}
+        - {x: 81, y: -109}
+        - {x: 11, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 6afdbe814470cf2428d94ed55aa13b59
+      internalID: -1075641467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_29
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 31}
+        - {x: 72, y: -4}
+        - {x: 0, y: -42}
+        - {x: -69, y: -72}
+        - {x: -128, y: -94}
+        - {x: -128, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 283924eaefac35742ad229fc6486fa5a
+      internalID: 2121654904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_30
+      rect:
+        serializedVersion: 2
+        x: 1792
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: 2, y: 128}
+        - {x: -64, y: 75}
+        - {x: -128, y: 31}
+        - {x: -128, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: 433d6484d01be684480e1537e177c147
+      internalID: 2135868355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BigLoop_31
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape:
+      - - {x: 128, y: 128}
+        - {x: -127.749985, y: 128}
+        - {x: -127.749985, y: -128}
+        - {x: 128, y: -128}
+      tessellationDetail: 0.2
+      bones: []
+      spriteID: ff41df97aaa8a8742b5adf82b536a46d
+      internalID: -1369826800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 92236bdf37e1a244a839fcbef9692018
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":256.0,"y":256.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      BigLoop_0: -3783389293790806585
+      BigLoop_1: -4916561885751579407
+      BigLoop_10: -1799461282
+      BigLoop_11: 1335647260
+      BigLoop_12: 971598603
+      BigLoop_13: -341181177
+      BigLoop_14: -1074164879
+      BigLoop_15: -1117031577
+      BigLoop_16: -1434595295
+      BigLoop_17: 220465287
+      BigLoop_18: 2004011018
+      BigLoop_19: -9427107
+      BigLoop_2: 1182295490965310260
+      BigLoop_20: 1165207589
+      BigLoop_21: 368245625
+      BigLoop_22: 781259669
+      BigLoop_23: -2060499078
+      BigLoop_24: 215807343
+      BigLoop_25: -1912546458
+      BigLoop_26: -608913162
+      BigLoop_27: 468740482
+      BigLoop_28: -1075641467
+      BigLoop_29: 2121654904
+      BigLoop_3: 5502207949190467353
+      BigLoop_30: 2135868355
+      BigLoop_31: -1369826800
+      BigLoop_4: -1174389213
+      BigLoop_5: 1924966785
+      BigLoop_6: 1664268162
+      BigLoop_7: 915906600
+      BigLoop_8: -1787697046
+      BigLoop_9: 1779949713
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

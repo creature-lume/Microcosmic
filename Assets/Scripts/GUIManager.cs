@@ -201,9 +201,11 @@ public class GUIManager : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
+        /*
         if (!focus)
         {
             SetPaused(true);
         }
+        */
     }
 }
