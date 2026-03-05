@@ -46,7 +46,6 @@ public class SonicBoomFX : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out NewPlayerController nPlayer)) gameObject.SetActive(false);
-        else if (collision.TryGetComponent(out PlayerController player)) gameObject.SetActive(false);
+        if (collision.TryGetComponent(out PlayerController player)) gameObject.SetActive(false);
     }
 }

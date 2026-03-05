@@ -136,12 +136,7 @@ public class LaunchSequence : MonoBehaviour
     {
         if (isDone) return;
 
-        if (collision.TryGetComponent(out NewPlayerController nPlayer))
-        {
-            if (!prompts[prompts.Count - 1].WasCompleted()) prompts[prompts.Count - 1].CompleteFail(true);
-            FinishSequence();
-        }
-        else if (collision.TryGetComponent(out PlayerController player))
+        if (collision.TryGetComponent(out PlayerController player))
         {
             if (!prompts[prompts.Count - 1].WasCompleted()) prompts[prompts.Count - 1].CompleteFail(true);
             FinishSequence();

@@ -105,13 +105,7 @@ public class Prompt : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out NewPlayerController nPlayer))
-        {
-            if (!wasCompleted) Show();
-            nPlayer.SetCurrentPrompt(this);
-        }
-
-        else if (collision.gameObject.TryGetComponent(out PlayerController player))
+        if (collision.gameObject.TryGetComponent(out PlayerController player))
         {
             if (!wasCompleted) Show();
             player.SetCurrentPrompt(this);

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-public class NewPlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     // ------------------------------------------------------------------
     [Header("Debug Only")]
@@ -33,6 +33,7 @@ public class NewPlayerController : MonoBehaviour
     private bool isGrounded;
     private bool isWallRunning;
     private bool isUpsideDown;
+    private bool isOnSlope;
     [Space]
 
     // ------------------------------------------------------------------
@@ -182,6 +183,7 @@ public class NewPlayerController : MonoBehaviour
         
         isWallRunning = (groundAngle == 90);
         isUpsideDown  = (groundAngle  > 90);
+        isOnSlope     = (groundAngle > 20 && groundAngle < 90);
 
         if (isGrounded  && !canJump && isJumping) EndJump();
     }
@@ -192,6 +194,8 @@ public class NewPlayerController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, Time.deltaTime * fallRotationSmooth);
             return;
         }
+
+        if (!isOnSlope && groundAngle >= 90 && !isWallRunning && !isUpsideDown) return;
 
         orientation        = Quaternion.FromToRotation(transform.up, groundInfo.normal);
         transform.rotation = Quaternion.Slerp(transform.rotation, orientation * transform.rotation, Time.deltaTime * rotationSmooth);

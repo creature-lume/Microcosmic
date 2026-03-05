@@ -4,7 +4,7 @@ public class Bumper : MonoBehaviour
 {
     // *-* BUMPERS WILL NEED TO BE REFACTORED WITH THE LAUNCH DIR
 
-    [SerializeField] PlayerController.LaunchDir bumpDir;
+    [SerializeField] OldPlayerController.LaunchDir bumpDir;
     [SerializeField] float bumpPower = 52f;
 
     private void Start()
@@ -16,7 +16,7 @@ public class Bumper : MonoBehaviour
     {
         if (collision.gameObject.TryGetComponent(out PlayerController playerController))
         {
-            playerController.Bump(bumpDir, bumpPower);
+            //playerController.Bump(bumpDir, bumpPower);s
         }
     }
 }
