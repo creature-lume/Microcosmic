@@ -26,7 +26,6 @@ public class NewPlayerController : MonoBehaviour
     // ------------------------------------------------------------------
     [Header("Ground Check")]
     [SerializeField] private float     groundedDistance;
-    [SerializeField] private float     forgiveFallDistance;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     private RaycastHit2D groundInfo;
@@ -34,12 +33,12 @@ public class NewPlayerController : MonoBehaviour
     private bool isGrounded;
     private bool isWallRunning;
     private bool isUpsideDown;
-    private bool isFallForgiven;
     [Space]
 
     // ------------------------------------------------------------------
     [Header("Rotation")]
     [SerializeField] private float rotationSmooth;
+    [SerializeField] private float fallRotationSmooth = 10.0f;
     private Quaternion orientation;
     private bool isFacingRight = true;
     [Space]
@@ -48,6 +47,7 @@ public class NewPlayerController : MonoBehaviour
     [Header("Gravity")]
     [SerializeField] private float gravity             = 98f;
     [SerializeField] private float fallGravityModifier = 2;
+    [SerializeField] private float keepGroundedGravityAttenuation = 0.1f;
     private Vector2 appliedGravity;
     [Space]
 
@@ -61,18 +61,25 @@ public class NewPlayerController : MonoBehaviour
     private Vector2 appliedMovement;
     [Space]
 
+    [Header("Slide Inertia")]
+    [SerializeField] private float slideInertiaStopAngle = 35;
+    private bool isInSlideInertia = false;
+    [Space]
+
     // ------------------------------------------------------------------
     [Header("Boost")]
     [SerializeField] private float boostSpeed;
+    [SerializeField] private float boostOnlyAngleMin = 80;
+    [SerializeField] private float boostOnlyAngleMax = 180;
+    [SerializeField] private float boostGravityAttenuation = 0.5f;
     public UnityEvent<bool> BoostUpdate;
     private bool isBoosting => playerBoost.IsBoosting();
-
     [Space]
 
     // ------------------------------------------------------------------
     [Header("Jump")]
-    [SerializeField] private float jumpForce   = 7f;
-    [SerializeField] private float maxJumpTime = 1f;
+    [SerializeField] private float jumpForce = 7f;
+    [SerializeField] private float maxJump   = 100f;
     private bool canJump;
     private bool isJumping;
     private Vector2 appliedJump;
@@ -102,17 +109,11 @@ public class NewPlayerController : MonoBehaviour
 
     public void Awake()
     {
-        if (!rb) rb = GetComponent<Rigidbody2D>();
+        if (!rb)                   rb = GetComponent<Rigidbody2D>();
         if (!playerBoost) playerBoost = GetComponent<PlayerBoost>();
-        if (!playerBoost)
-        {
-            Debug.LogError($"Player boost is null.");
-            Debug.DebugBreak();
-        }
 
         playerBoost.OnGaugeDepleted.AddListener(EndBoost);
 
-        //isInControl = false;
         //isInLaunchingSequence = true;
         //TriggerRunAnimation();
 
@@ -120,7 +121,6 @@ public class NewPlayerController : MonoBehaviour
         soundManager = SoundManager.instance;
 
         moveSpeed = baseMoveSpeed;
-        //rb.gravityScale = gravity;
         rb.gravityScale = 0;
 
         DEBUG1.color = Color.red;
@@ -135,16 +135,18 @@ public class NewPlayerController : MonoBehaviour
         GroundCheck();
         RotationCheck();
         GravityCheck();
+        SlideInertiaCheck();
         MoveCheck();
         CameraCheck();
 
         ApplyMovement();
 
-        DEBUG1.SetText($"isHoldingDownMove: {isHoldingDownMove}");
-        DEBUG2.SetText($"isFacingRight: {isFacingRight}");
-        DEBUG3.SetText($"isBoosting: {isBoosting}");
+        DEBUG1.SetText($"groundAngle: {groundAngle}");
+        DEBUG2.SetText($"isInSlideInertia: {isInSlideInertia}");
+        DEBUG3.SetText($"Ground Normal: {groundInfo.normal}");
 
         CheckAndFaceDirection();
+        AnimationCheck();
     }
 
     private void GroundCheck()
@@ -155,54 +157,76 @@ public class NewPlayerController : MonoBehaviour
         isGrounded  = groundInfo.collider != null;
         canJump     = isGrounded;
         
-        isFallForgiven = Physics2D.Raycast(transform.position, groundCheck.position - transform.position, forgiveFallDistance, groundLayer);
-
         Debug.DrawLine(transform.position, (groundCheck.position), Color.black);
         Debug.DrawLine(transform.position, (groundCheck.position), Color.yellow);
 
         isWallRunning = (groundAngle == 90);
         isUpsideDown  = (groundAngle  > 90);
 
-        if (isGrounded && !canJump && isJumping) EndJump();
+        if (isGrounded  && !canJump && isJumping) EndJump();
     }
     private void RotationCheck()
     {
         if (!isGrounded)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, Time.deltaTime * rotationSmooth);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, Time.deltaTime * fallRotationSmooth);
             return;
         }
 
         orientation        = Quaternion.FromToRotation(transform.up, groundInfo.normal);
         transform.rotation = Quaternion.Slerp(transform.rotation, orientation * transform.rotation, Time.deltaTime * rotationSmooth);
     }
+
+    private bool IsInBoostOnlyRange(float x) { return boostOnlyAngleMin <= x && x <= boostOnlyAngleMax; }
+
     private void GravityCheck()
     {
-        //if (isWallRunning)
-        //{
-        //    appliedGravity = -gravity * groundInfo.normal;
-        //    return;
-        //}
-
-        if (isBoosting && isGrounded /*&& isFallForgiven*/)
+        if (isBoosting && isGrounded) // Stick to surface while boosting
         {
-            appliedGravity = (appliedMovement.magnitude * 0.5f) * -groundInfo.normal;
+            appliedGravity = (appliedMovement.magnitude * boostGravityAttenuation) * -groundInfo.normal;
             return;
         }
 
-        if (isGrounded)
+        if (isInSlideInertia) // If should slide off a ramp
         {
-            appliedGravity = (-gravity * 0.1f) * groundInfo.normal;
+            appliedGravity  += new Vector2(0, -gravity * Time.deltaTime * fallGravityModifier);
+            return;
+        }
+        
+        if (isGrounded && !isBoosting && (!isWallRunning && !isUpsideDown)) // Stay on the ground but don't be slowed down
+        {                                                                   // during regular grounded (unboosted) movements
+            appliedGravity = (-gravity * keepGroundedGravityAttenuation) * groundInfo.normal;
             return;
         }
 
-        if (rb.linearVelocityY < 0 && !isWallRunning)
+        if (isWallRunning || isUpsideDown) // If boosted stopped while wall running/upside down
         {
-            appliedGravity += new Vector2(0, -gravity * Time.deltaTime * fallGravityModifier);
+            appliedGravity = new Vector2(0, -gravity * boostGravityAttenuation);
+            return;
+        }
+         
+        if (rb.linearVelocityY < 0) appliedGravity += new Vector2(0, -gravity * Time.deltaTime * fallGravityModifier); // Fall faster if not rising from a jump
+        else                        appliedGravity += new Vector2(0, -gravity * Time.deltaTime);                       // Regular gravity 
+    }
+    private void SlideInertiaCheck()
+    {
+        if (groundAngle <= slideInertiaStopAngle)
+        {
+            isInSlideInertia = false;
             return;
         }
 
-        appliedGravity += new Vector2(0, -gravity * Time.deltaTime);
+        if (!isBoosting && IsInBoostOnlyRange(groundAngle))
+        {
+            if (!isInSlideInertia && isWallRunning)
+            {
+                if (isFacingRight) SetIsFacingRight(rb.linearVelocity.y < 0);
+                else               SetIsFacingRight(rb.linearVelocity.y > 0);
+            }
+
+            isInSlideInertia = true;
+            return;
+        }
     }
 
     #region Movement
@@ -214,8 +238,8 @@ public class NewPlayerController : MonoBehaviour
         {
             if ((isWallRunning || isUpsideDown) && isHoldingDownMove && !isJumping) return;
 
-            movementInput     = context.ReadValue<Vector2>();
             isHoldingDownMove = true;
+            movementInput     = context.ReadValue<Vector2>();
         }
 
         if (context.canceled)
@@ -223,22 +247,23 @@ public class NewPlayerController : MonoBehaviour
             isHoldingDownMove = false;
             if (isBoosting) return;
 
-            movementInput     = Vector2.zero;
-
-            //if (!isUpsideDown && !isWallRunning) return;
-            //appliedGravity += new Vector2(0, -gravity * Time.deltaTime * fallGravityModifier);
+            movementInput = Vector2.zero;
         }
     }
     private void MoveCheck()
     {
-        if      (movementInput.x > 0) appliedMovement = transform.right  * moveSpeed;
-        else if (movementInput.x < 0) appliedMovement = -transform.right * moveSpeed;
+        if (isInSlideInertia || movementInput.x == 0)
+        {
+            appliedMovement = Vector2.zero;
+            return;
+        }
 
-        else appliedMovement = Vector2.zero;
+        if (movementInput.x > 0) appliedMovement = transform.right  * moveSpeed;
+        else                     appliedMovement = -transform.right * moveSpeed;
     }
     private void ApplyMovement()
     {
-        Vector2 appliedForces = (appliedMovement + appliedGravity);
+        Vector2 appliedForces = appliedMovement + appliedGravity;
         rb.AddForce(appliedForces);
         rb.linearVelocity += appliedJump;
     }
@@ -290,6 +315,27 @@ public class NewPlayerController : MonoBehaviour
     }
     #endregion
 
+    #region Animation 
+    // Ideally, the animations would be in their own script
+    private void AnimationCheck()
+    {
+        if (rb.linearVelocity == Vector2.zero) TriggerIdleAnimation();
+        else TriggerRunAnimation();
+    }
+
+    private void TriggerRunAnimation()
+    {
+        spriteAnimator.SetBool("isRunning", true);
+        trailAnimator.SetBool("isRunning", true);
+    }
+
+    private void TriggerIdleAnimation()
+    {
+        spriteAnimator.SetBool("isRunning", false);
+        trailAnimator.SetBool("isRunning", false);
+    }
+    #endregion
+
     private void CameraCheck()
     {
         c_PositionComposer.Lookahead.IgnoreY = !isWallRunning;
@@ -316,16 +362,20 @@ public class NewPlayerController : MonoBehaviour
         isJumping = true;
         canJump   = false;
 
-        if (isWallRunning || isUpsideDown)
-        {
-            appliedJump = jumpForce * groundInfo.normal;
-            //appliedGravity = appliedJump;
-        }
+        float accumulatedJump = 0f;
+
+        if (isWallRunning || isUpsideDown) 
+             appliedJump = jumpForce * groundInfo.normal;
         else appliedJump = jumpForce * groundInfo.normal;
 
-        yield return new WaitForSeconds(maxJumpTime);
-        
-        if (isJumping) EndJump();
+        while(isJumping)
+        {
+            accumulatedJump += jumpForce;
+
+            if (accumulatedJump >= maxJump && isJumping) EndJump();
+
+            yield return new WaitForFixedUpdate();
+        }
     }
 
     private void EndJump()
@@ -349,7 +399,8 @@ public class NewPlayerController : MonoBehaviour
 
             if (!isBoosting) return;
 
-            moveSpeed = boostSpeed;
+            moveSpeed        = boostSpeed;
+            isInSlideInertia = false;
             if (isHoldingDownMove) return;
 
             if (isFacingRight) movementInput = Vector2.right;
@@ -370,7 +421,6 @@ public class NewPlayerController : MonoBehaviour
     {
         moveSpeed = baseMoveSpeed;
         if (!isHoldingDownMove) movementInput = Vector2.zero;
-
         BoostUpdate.Invoke(false);
     }
     #endregion

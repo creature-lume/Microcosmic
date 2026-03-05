@@ -201,10 +201,11 @@ public class GUIManager : MonoBehaviour
 
     private void OnApplicationFocus(bool focus)
     {
-        return; //for debug only. annoying.
+        /*
         if (!focus)
         {
             SetPaused(true);
         }
+        */
     }
 }
