@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TMPro;
 using Unity.Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -33,7 +34,6 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private bool isWallRunning;
     private bool isUpsideDown;
-    private bool isOnSlope;
     [Space]
 
     // ------------------------------------------------------------------
@@ -57,8 +57,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float baseMoveSpeed = 10f;
     private float   moveSpeed;
     private Vector2 movementInput;
-    private bool    isHoldingDownMove;
-    private bool    isInControl;
+    private bool IsHoldingDownMove => isHoldingDownRight || isHoldingDownLeft;
+    private bool isHoldingDownRight;
+    private bool isHoldingDownLeft;
+    private bool isInControl;
     private Vector2 appliedMovement;
     [Space]
 
@@ -74,7 +76,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float boostOnlyAngleMax = 180;
     [SerializeField] private float boostGravityAttenuation = 0.5f;
     public UnityEvent<bool> BoostUpdate;
-    private bool isBoosting => playerBoost.IsBoosting();
+    private bool IsBoosting => playerBoost.IsBoosting();
     [Space]
 
     // ------------------------------------------------------------------
@@ -84,6 +86,7 @@ public class PlayerController : MonoBehaviour
     private bool canJump;
     private bool isJumping;
     private Vector2 appliedJump;
+    private bool resetGravityOnJump = false;
     [Space]
 
     // ------------------------------------------------------------------
@@ -106,6 +109,7 @@ public class PlayerController : MonoBehaviour
     //private bool isInLaunchingSequence = true;
     //private Prompt currentPrompt;
 
+
     private void OnValidate() { scale = transform.localScale; }
 
     // PLEASE READ (to the corrector):
@@ -120,7 +124,7 @@ public class PlayerController : MonoBehaviour
     //
     // This new script should work regardless of tags, facillitating Level Design as there is no need to work on 10 tilemaps
     //      (the old 10 tilemaps were: Launching Up/UpRight/Right/DownRight/Down/DownLeft/Left/LeftUp, NoLaunch, and HiddenArea)
-    //      There are now only 2 tilemaps: the level tilemap (Stage) and HiddenArea
+    //      There are now only 3 tilemaps: the level tilemap (Stage), HiddenArea and NotGround
     // This new script also added a gauged jump, which was absent before
     // It also added a feedback to better teach the player that they must boost to go up slopes (slideInertia)
     // Custom gravity was made instead of the built-in RigidBody gravity
@@ -130,9 +134,13 @@ public class PlayerController : MonoBehaviour
     // I would appreciate it if you could document these occurrences or offer potential causes or solutions
     // Additionally, since it relies heavily on surface normals and Unity's default mesh collider tends to be faulty, level element colliders must
     // be check manually to make sure there is no odd normal (such as a 90° angle on a rounded slope) which could make the player fall off
+    //
+    // this project has been fun and formative but oh my god there are so many edge cases
 
     public void Awake()
     {
+        transform.position = levelStart.position;
+
         if (!rb)                   rb = GetComponent<Rigidbody2D>();
         if (!playerBoost) playerBoost = GetComponent<PlayerBoost>();
 
@@ -141,7 +149,6 @@ public class PlayerController : MonoBehaviour
         //isInLaunchingSequence = true;
         //TriggerRunAnimation();
 
-        //transform.position = levelStart.position;
         soundManager = SoundManager.instance;
 
         moveSpeed = baseMoveSpeed;
@@ -156,8 +163,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        GroundCheck();
         RotationCheck();
+        GroundCheck();
         GravityCheck();
         SlideInertiaCheck();
         MoveCheck();
@@ -165,9 +172,9 @@ public class PlayerController : MonoBehaviour
 
         ApplyMovement();
 
-        DEBUG1.SetText($"");
-        DEBUG2.SetText($"");
-        DEBUG3.SetText($"");
+        DEBUG1.SetText($"isHoldingDownRight: {isHoldingDownRight}");
+        DEBUG2.SetText($"isHoldingDownLeft: {isHoldingDownLeft}");
+        DEBUG3.SetText($"IsHoldingDownMove: {IsHoldingDownMove}");
 
         CheckAndFaceDirection();
         AnimationCheck();
@@ -183,9 +190,10 @@ public class PlayerController : MonoBehaviour
         
         isWallRunning = (groundAngle == 90);
         isUpsideDown  = (groundAngle  > 90);
-        isOnSlope     = (groundAngle > 20 && groundAngle < 90);
+            
+        if (isGrounded && movementInput.x != 0) movementInput = new Vector2(movementInput.x > 0 ? 1 : -1, 0);
 
-        if (isGrounded  && !canJump && isJumping) EndJump();
+        if (isGrounded && !canJump && isJumping) EndJump();
     }
     private void RotationCheck()
     {
@@ -195,7 +203,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (!isOnSlope && groundAngle >= 90 && !isWallRunning && !isUpsideDown) return;
+        if (groundAngle >= 85 && ((!isWallRunning && !isUpsideDown) || !IsBoosting)) return;
 
         orientation        = Quaternion.FromToRotation(transform.up, groundInfo.normal);
         transform.rotation = Quaternion.Slerp(transform.rotation, orientation * transform.rotation, Time.deltaTime * rotationSmooth);
@@ -205,9 +213,16 @@ public class PlayerController : MonoBehaviour
 
     private void GravityCheck()
     {
-        if (isBoosting && isGrounded) // Stick to surface while boosting
+        if (resetGravityOnJump)
         {
-            appliedGravity = (appliedMovement.magnitude * boostGravityAttenuation) * -groundInfo.normal;
+            appliedGravity = Vector2.zero;
+            resetGravityOnJump = false;
+            return;
+        }
+
+        if (IsBoosting && isGrounded) // Stick to surface while boosting
+        {
+            appliedGravity = appliedMovement.magnitude * boostGravityAttenuation * -groundInfo.normal;
             return;
         }
 
@@ -217,7 +232,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
         
-        if (isGrounded && !isBoosting && (!isWallRunning && !isUpsideDown)) // Stay on the ground but don't be slowed down
+        if (isGrounded && !IsBoosting && (!isWallRunning && !isUpsideDown)) // Stay on the ground but don't be slowed down
         {                                                                   // during regular grounded (unboosted) movements
             appliedGravity = (-gravity * keepGroundedGravityAttenuation) * groundInfo.normal;
             return;
@@ -240,7 +255,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (!isBoosting && IsInBoostOnlyRange(groundAngle))
+        if (!IsBoosting && IsInBoostOnlyRange(groundAngle))
         {
             if (!isInSlideInertia && isWallRunning)
             {
@@ -260,16 +275,20 @@ public class PlayerController : MonoBehaviour
 
         if (context.started)
         {
-            if ((isWallRunning || isUpsideDown) && isHoldingDownMove && !isJumping) return;
+            isHoldingDownRight = context.ReadValue<Vector2>().x > 0;
+            isHoldingDownLeft  = context.ReadValue<Vector2>().x < 0;
 
-            isHoldingDownMove = true;
-            movementInput     = context.ReadValue<Vector2>();
+            if (IsBoosting && (isUpsideDown || isWallRunning)) return;
+
+            movementInput = context.ReadValue<Vector2>();
         }
 
         if (context.canceled)
         {
-            isHoldingDownMove = false;
-            if (isBoosting) return;
+            isHoldingDownRight = false;
+            isHoldingDownLeft  = false;
+
+            if (IsBoosting) return;
 
             movementInput = Vector2.zero;
         }
@@ -296,7 +315,7 @@ public class PlayerController : MonoBehaviour
     #region FaceDirection
     private void CheckAndFaceDirection()
     {
-        if (!isHoldingDownMove) return;
+        if (!IsHoldingDownMove && !IsBoosting) return;
 
         if (isUpsideDown)
         {
@@ -343,7 +362,8 @@ public class PlayerController : MonoBehaviour
     // Ideally, the animations would be in their own script
     private void AnimationCheck()
     {
-        if (rb.linearVelocity == Vector2.zero) TriggerIdleAnimation();
+        if (rb.linearVelocity == Vector2.zero) 
+             TriggerIdleAnimation();
         else TriggerRunAnimation();
     }
 
@@ -382,14 +402,35 @@ public class PlayerController : MonoBehaviour
 
         isJumping = true;
         canJump   = false;
-
         float accumulatedJump = 0f;
 
-        if (isWallRunning || isUpsideDown) 
-             appliedJump = jumpForce * groundInfo.normal;
-        else appliedJump = jumpForce * groundInfo.normal;
+        if (IsBoosting && isUpsideDown) // Handle upside down jump
+        {
+            resetGravityOnJump = true;
+            SetIsFacingRight(-movementInput.x > 0);
 
-        while(isJumping)
+            if (groundInfo.normal.y == -1) appliedJump = jumpForce * 10 * new Vector2(-movementInput.x > 0 ? 0.25f : -0.25f, -0.75f);
+            else                           appliedJump = jumpForce * 10 * groundInfo.normal;
+
+            movementInput  = appliedJump.normalized;
+            appliedGravity = appliedJump;
+
+            rb.AddForce(appliedJump, ForceMode2D.Impulse);
+            EndJump();
+            yield break;
+        }
+        else // Handle normal + Wall run jump
+            appliedJump = jumpForce * groundInfo.normal;
+
+        // Make move direction follow jump after a wall jump
+        if (IsBoosting && appliedJump.x != 0)
+        {
+            movementInput = new Vector2(appliedJump.x > 0 ? 1 : -1, 0);
+            SetIsFacingRight(movementInput.x > 0);
+        }
+
+        // Add height while jumping until maxJump is reached or the jump gets interrupted
+        while (isJumping)
         {
             accumulatedJump += jumpForce;
 
@@ -401,7 +442,7 @@ public class PlayerController : MonoBehaviour
 
     private void EndJump()
     {
-        isJumping = false;
+        isJumping   = false;
 
         appliedJump = Vector2.zero;
         canJump     = isGrounded;
@@ -418,11 +459,11 @@ public class PlayerController : MonoBehaviour
         {
             TryBoost();
 
-            if (!isBoosting) return;
+            if (!IsBoosting) return;
 
             moveSpeed        = boostSpeed;
             isInSlideInertia = false;
-            if (isHoldingDownMove) return;
+            if (IsHoldingDownMove) return;
 
             if (isFacingRight) movementInput = Vector2.right;
             else               movementInput = Vector2.left;
@@ -441,7 +482,7 @@ public class PlayerController : MonoBehaviour
     public void EndBoost()
     {
         moveSpeed = baseMoveSpeed;
-        if (!isHoldingDownMove) movementInput = Vector2.zero;
+        if (!IsHoldingDownMove) movementInput = Vector2.zero;
         BoostUpdate.Invoke(false);
     }
     #endregion

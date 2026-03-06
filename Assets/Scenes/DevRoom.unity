@@ -162006,7 +162006,6 @@ MonoBehaviour:
   rotationSmooth: 360
   fallRotationSmooth: 4
   gravity: 98
-  maxGravity: 300
   fallGravityModifier: 2
   keepGroundedGravityAttenuation: 0.1
   baseMoveSpeed: 80
@@ -162015,7 +162014,6 @@ MonoBehaviour:
   boostOnlyAngleMin: 80
   boostOnlyAngleMax: 180
   boostGravityAttenuation: 0.5
-  boostCameraYankTime: 1
   BoostUpdate:
     m_PersistentCalls:
       m_Calls:

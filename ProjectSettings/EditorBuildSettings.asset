@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: a3f38ec852381454892067301b110078
   - enabled: 1
+    path: Assets/Scenes/Level1.unity
+    guid: 1611a3af033cd28459e86c4d02e4dcd4
+  - enabled: 1
     path: Assets/Scenes/SpiralNotebookPlanet.unity
     guid: c416ba07e97bcbb448e6ba15d1d504e4
   m_configObjects:

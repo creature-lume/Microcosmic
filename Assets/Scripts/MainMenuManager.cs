@@ -31,7 +31,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnLume()
     {
-        Application.OpenURL("https://meerlylume.itch.io/");
+        Application.OpenURL("https://creature-lume.itch.io/");
     }
 
     public void OnBlue()
@@ -41,7 +41,8 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnSpiralNotebookPlanet()
     {
-        SceneManager.LoadScene("SpiralNotebookPlanet");
+        //SceneManager.LoadScene("SpiralNotebookPlanet");
+        SceneManager.LoadScene("Level1");
     }
 
     public void ToMenu()

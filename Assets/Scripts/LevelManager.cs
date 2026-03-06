@@ -92,6 +92,8 @@ public class LevelManager : MonoBehaviour
     {
         LevelStartEvent.AddListener(GUIManager.instance.OnLevelStart);
         score = 0;
+
+        EndLaunchingSequence(Prompt.PromptQuality.Perfect);
     }
 
     public void EndLevel()
