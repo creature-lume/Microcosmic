@@ -30,14 +30,17 @@ public class PlayerState : MonoBehaviour
         if (currentState != GameState.Alive) return true;
 
         //If the player should lose Gauge
+        /*
         if (!boost.IsGaugeDepleted()) 
         {
             PlayerHurtEvent.Invoke();
             return true;
         }
+        */
 
         //If the player should lose a Life
         SetLives(lives - 1);
+        /*
         if (lives <= 0)
         {
             SoundManager.instance.PlaySFX(SoundManager.SFX.Gameover);
@@ -45,6 +48,7 @@ public class PlayerState : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             return true;
         }
+        */
         currentState = GameState.Dead;
         LifeLossEvent.Invoke(activeCheckpoint.position);
         return true;

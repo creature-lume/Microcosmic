@@ -172,9 +172,9 @@ public class PlayerController : MonoBehaviour
 
         ApplyMovement();
 
-        DEBUG1.SetText($"isHoldingDownRight: {isHoldingDownRight}");
-        DEBUG2.SetText($"isHoldingDownLeft: {isHoldingDownLeft}");
-        DEBUG3.SetText($"IsHoldingDownMove: {IsHoldingDownMove}");
+        DEBUG1.SetText($"");
+        DEBUG2.SetText($"");
+        DEBUG3.SetText($"");
 
         CheckAndFaceDirection();
         AnimationCheck();
@@ -486,6 +486,26 @@ public class PlayerController : MonoBehaviour
         BoostUpdate.Invoke(false);
     }
     #endregion
+
+    public void OnLoseLife(Vector3 checkpoint)
+    {
+        movementInput      = Vector2.zero;
+        appliedGravity     = Vector2.zero;
+        appliedJump        = Vector2.zero;
+        rb.linearVelocity  = Vector2.zero;
+
+        isHoldingDownLeft  = false; 
+        isHoldingDownRight = false;
+
+        transform.position = checkpoint;
+
+        EndBoost();
+
+        soundManager.PlaySFX(SoundManager.SFX.Death);
+        playerBoost.AddGauge(100);
+
+        RespawnEvent.Invoke();
+    }
 
     internal void SetCurrentPrompt(Prompt prompt)
     {

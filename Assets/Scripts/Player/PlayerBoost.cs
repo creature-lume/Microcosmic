@@ -19,6 +19,7 @@ public class PlayerBoost : MonoBehaviour
     [Space]
 
     [Header("Gauge GUI")]
+    [SerializeField] Animator gaugesAnimator;
     [SerializeField] float gaugeDisplayDelay;
     [SerializeField] BoostGauge firstGauge;
     [SerializeField] BoostGauge secondGauge;
@@ -69,8 +70,6 @@ public class PlayerBoost : MonoBehaviour
         }
         gauge = Mathf.Clamp(gauge - amount, 0, maxGauge);
 
-        SetGauge(gauge);
-
         if (gauge <= 0)
         {
             isBoosting = false;
@@ -96,11 +95,9 @@ public class PlayerBoost : MonoBehaviour
         firstGauge.SetMinMaxSlider(0, 100);
         secondGauge.SetMinMaxSlider(0, 100);
         thirdGauge.SetMinMaxSlider(0, 100);
-    }
-    private void Update()
-    {
-        //DEBUG ONLY
-        gauge = 300;
+
+        AddGauge(100);
+        gaugesAnimator.SetTrigger("GaugeIn");
     }
 
     public void StartBoost()

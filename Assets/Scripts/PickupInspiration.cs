@@ -1,10 +1,9 @@
-using System.Collections;
 using UnityEngine;
 
 public class PickupInspiration : MonoBehaviour
 {
-    [HideInInspector] public static int pickupCount = 0;
-    [HideInInspector] public static int totalCount  = 0;
+    [HideInInspector] public static int pickupCount       = 0;
+    [HideInInspector] public static int totalCount        = 0;
 
     [SerializeField] protected int gaugeAmount;
     [SerializeField] protected ParticleSystem fx;
@@ -15,6 +14,8 @@ public class PickupInspiration : MonoBehaviour
     protected bool wasPickedUp;
     private AudioSource source;
 
+    private PlayerController pc;
+
     private void Awake()
     {
         totalCount++;
@@ -24,7 +25,8 @@ public class PickupInspiration : MonoBehaviour
     {
         canBePickedUp = true;
         wasPickedUp   = false;
-        source = GetComponent<AudioSource>();
+        source        = GetComponent<AudioSource>();
+        source.pitch  = Random.Range(0.9f, 1.1f);
     }
 
     virtual protected void OnTriggerEnter2D(Collider2D other)
@@ -41,6 +43,24 @@ public class PickupInspiration : MonoBehaviour
             branch2.SetActive(false);
             wasPickedUp = true;
             pickupCount++;
+
+            if (other.TryGetComponent(out PlayerController playerController))
+            {
+                pc = playerController;
+                playerController.RespawnEvent.AddListener(OnPlayerRespawn);
+            }
         }
+    }
+
+   protected virtual void OnPlayerRespawn()
+   {
+        canBePickedUp = true;
+        wasPickedUp   = false;
+        pickupCount--;
+
+        branch1.SetActive(true);
+        branch2.SetActive(true);
+
+        pc.RespawnEvent?.RemoveListener(OnPlayerRespawn);
     }
 }
