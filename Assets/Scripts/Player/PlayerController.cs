@@ -278,7 +278,7 @@ public class PlayerController : MonoBehaviour
             isHoldingDownRight = context.ReadValue<Vector2>().x > 0;
             isHoldingDownLeft  = context.ReadValue<Vector2>().x < 0;
 
-            if (IsBoosting && (isUpsideDown || isWallRunning)) return;
+            if (IsBoosting && isGrounded && (isUpsideDown || isWallRunning)) return;
 
             movementInput = context.ReadValue<Vector2>();
         }

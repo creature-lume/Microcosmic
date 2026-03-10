@@ -26,7 +26,7 @@ public class PickupInspiration : MonoBehaviour
         canBePickedUp = true;
         wasPickedUp   = false;
         source        = GetComponent<AudioSource>();
-        source.pitch  = Random.Range(0.9f, 1.1f);
+        source.pitch  = Random.Range(1f, 1.1f);
     }
 
     virtual protected void OnTriggerEnter2D(Collider2D other)

@@ -28,26 +28,31 @@ public class PlayerBoost : MonoBehaviour
     public UnityEvent OnGaugeDepleted;
 
     #region Gauge
-    public int GetGauge() { return gauge; }
-    public void SetGauge(int value) 
+    public void SetGauge(int value)
     {
-        if (value < 100)
+        gauge = value;
+        RefreshGauge();
+    }
+    public int GetGauge() { return gauge; }
+    public void RefreshGauge() 
+    {
+        if (gauge < 100)
         {
-            firstGauge.SetSliderValue(value);
+            firstGauge.SetSliderValue(gauge);
             secondGauge.SetSliderValue(0);
             thirdGauge.SetSliderValue(0);
         }
-        else if (value < 200)
+        else if (gauge < 200)
         {
             firstGauge.SetSliderValue(100);
-            secondGauge.SetSliderValue(value - 100);
+            secondGauge.SetSliderValue(gauge - 100);
             thirdGauge.SetSliderValue(0);
         }
         else
         {
             firstGauge.SetSliderValue(100);
             secondGauge.SetSliderValue(100);
-            thirdGauge.SetSliderValue(value - 200);
+            thirdGauge.SetSliderValue(gauge - 200);
         }
     }
     public void AddGauge(int amount)
@@ -59,7 +64,7 @@ public class PlayerBoost : MonoBehaviour
         }
         gauge = Mathf.Clamp(gauge + amount, 0, maxGauge);
 
-        SetGauge(gauge);
+        RefreshGauge();
     }
     public void RemoveGauge(int amount)
     {
@@ -75,6 +80,8 @@ public class PlayerBoost : MonoBehaviour
             isBoosting = false;
             OnGaugeDepleted?.Invoke();
         }
+
+        RefreshGauge();
     }
     #endregion
 
